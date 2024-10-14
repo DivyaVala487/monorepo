@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "noEmit": false,
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "pretty": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "*": ["node_modules/*"],
+      "@config/*": ["src/config"],
+      "@loaders/*": ["src/loaders/*"],
+      "@modules/*": ["src/modules/*"],
+      "@utils/*": ["src/helperFunctions/*"],
+      "@middleware/*": ["src/middlewares/*"],
+      "@dtos/*": ["src/dtos/*"],
+      "@routers/*": ["src/routers/*"],
+      "@services/*": ["src/services/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/server.ts"],
+  "exclude": ["node_modules", "dist"]
+}
