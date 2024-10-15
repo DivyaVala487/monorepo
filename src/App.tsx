@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
+// import { ReusableNavbar } from './reusableComponents/headers/ReusableNavbar';
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <ReusableNavbar navigationLinks={[]} />
+//     </div>
+//   );
+// }
+
+// export default App;
+
+import { ThemeProvider } from "styled-components";
+import { ReusableNavbar } from "./reusableComponents/headers/ReusableNavbar";
+
+const theme = {
+  colors: {
+    primary: "#0070f3",
+  },
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <ReusableNavbar navigationLinks={[]} />
+    </ThemeProvider>
   );
 }
 
