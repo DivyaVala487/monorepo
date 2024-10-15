@@ -3,12 +3,11 @@ import { Link } from "@mui/joy";
 
 export const HeaderContainer = styled.header`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   background-color: aliceblue;
   margin: 0;
-  padding: 1rem;
-  width: 95vw;
+  padding: 0rem 2rem;
 `;
 
 export const Title = styled.h3`

@@ -12,10 +12,10 @@ import {
   ProfileContainer,
   Profile,
   LogoutButton,
-} from "./ReusableNavbarStyles";
-import { HeaderProps } from "./HeaderDto";
+} from "../styledComponents/ReusableNavbarStyles"
+import { HeaderProps } from "../dtos/HeaderDto"; 
 // import { navLinks } from "../../constants/headerConstants/HeaderConstants";
-import {headerStyles,navLinks,inputPlaceHolder,inputType,title,profile} from "./HeaderConstants"
+import {headerStyles,navLinks,inputPlaceHolder,inputType,title,profile} from "../../src/utils/constants"
 
 export const ReusableNavbar: React.FC<HeaderProps> = ({
   title,

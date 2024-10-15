@@ -12,7 +12,12 @@
 // export default App;
 
 import { ThemeProvider } from "styled-components";
-import { ReusableNavbar } from "./reusableComponents/headers/ReusableNavbar";
+import { ReusableNavbar } from "./components/ReusableNavbar"; 
+import States from "./pages/states/States";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Country from "./pages/country/Country";
+import Home from "./pages/Home/Home";
+import City from "./pages/City/City";
 
 const theme = {
   colors: {
@@ -23,7 +28,16 @@ const theme = {
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <ReusableNavbar navigationLinks={[]} />
+      <ReusableNavbar navigationLinks={[]} title="Absyz" inputPlaceHolder="Search.." />
+    <BrowserRouter>
+    <Routes>
+
+      <Route path="/" element={<Home/>}/>
+      <Route path="/country" element={<Country/>}/>
+      <Route path="/state" element={<States/>}/>
+      <Route path="/city" element={<City/>}/>
+    </Routes>
+    </BrowserRouter>
     </ThemeProvider>
   );
 }

@@ -1,8 +1,8 @@
 export const navLinks = [
-    { label: "Home", url: "/home" },
-    { label: "About", url: "/about" },
-    { label: "Contact Us", url: "/contact" },
-    { label: "Blogs", url: "/blog" },
+    { label: "Home", url: "/" },
+    { label: "Country", url: "/country" },
+    { label: "State", url: "/state" },
+    { label: "City", url: "/city" },
   ];
   
   export const headerStyles = {
