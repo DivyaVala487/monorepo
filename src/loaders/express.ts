@@ -3,6 +3,7 @@ import cors from "cors";
 import { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import compression from "compression";
+import { routes } from "../routers/index";
 // import { routes } from "@routers/index";
 // import { routes } from "@routers/index";
 
@@ -21,7 +22,7 @@ export default ({ app }: { app: express.Application }) => {
   app.use(cors({ origin: "*" }));
   app.use(express.json());
 
-  // routes(app);
+  routes(app);
   app.use((req, res, next) => {
     const err: any = new Error("THE METHOD OR END POINT NOT PRESENT RE-CHECK ONCE");
     err["status"] = 404;
