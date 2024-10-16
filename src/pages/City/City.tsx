@@ -76,7 +76,7 @@ const City: React.FC = () => {
              {errors?.city && <p className="error-message">{errors?.city}</p>}
         </Grid>
         <Grid xs={12} md={3}>
-          <ReuseableButton variant="solid" size="sm" title="Submit" type="submit" />
+          <ReuseableButton variant="solid" size="sm" title="Submit" type="submit"  styles={{backgroundColor:"#735DA5"}} />
         </Grid>
       </Grid>
     </form>

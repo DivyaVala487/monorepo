@@ -1,62 +1,109 @@
-import React from "react";
-import { FaSearch, FaUserCircle } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaSearch, FaUserCircle, FaBars } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
-import {
-  HeaderContainer,
-  Title,
-  SearchContainer,
-  SearchInput,
-  NavList,
-  NavItem,
-  StyledNavLink,
-  ProfileContainer,
-  Profile,
-  LogoutButton,
-} from "../styledComponents/ReusableNavbarStyles"
-import { HeaderProps } from "../dtos/HeaderDto"; 
-// import { navLinks } from "../../constants/headerConstants/HeaderConstants";
-import {headerStyles,navLinks,inputPlaceHolder,inputType,title,profile} from "../../src/utils/constants"
+import "./styles.css" 
+import { HeaderProps } from "../dtos/HeaderDto";
 
-export const ReusableNavbar: React.FC<HeaderProps> = ({
+const Header: React.FC<HeaderProps> = ({
   title,
+  navLinks,
   customStyles = {},
   profile,
   inputType,
   inputPlaceHolder,
+  maxLinks = 5,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleLogout = () => {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     localStorage.removeItem("user_id");
     localStorage.removeItem("user_name");
+    window.location.href = "/login";
   };
-  console.log("Consoling here")
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  console.log(navLinks,"navlinks")
   return (
-    <HeaderContainer>
-      <Title>{title}</Title>
-      <SearchContainer>
-        <SearchInput type={inputType} placeholder={inputPlaceHolder} />
-        <FaSearch size={30} color="black" />
-      </SearchContainer>
-      <nav>
-        <NavList>
-          {navLinks.map((link, index) => (
-            <NavItem key={index} style={customStyles.navItem}>
-              <StyledNavLink href={link.url} style={customStyles.navLink}>
-                {link.label}
-              </StyledNavLink>
-            </NavItem>
+    <header className="header-container">
+      <button className="menu-bar" onClick={toggleMenu}>
+        <FaBars size={50} />
+      </button>
+
+      <nav className={`side-menu ${isMenuOpen ? "open" : ""}`}>
+        <div className="mobile-side-container">
+          <p className="mobile-profile-text">Hi, {profile}</p>
+          <button className="close-menu-bar" onClick={toggleMenu}>
+            <FaBars size={50} color="black" />
+          </button>
+        </div>
+        <ul className="nav-list">
+          {navLinks?.slice(0, maxLinks).map((link, index) => (
+            <div className="mobile-div-container">
+              {/* <a className="menu-icon">
+                {React.createElement(link.icon, { size: 40 })}
+              </a> */}
+              <li key={index} className="nav-item" style={customStyles.navItem}>
+                <a
+                  href={link.url}
+                  className="nav-link"
+                  style={customStyles.navLink}
+                  onClick={toggleMenu} // Close menu when clicking a link
+                >
+                  {link.label}
+                </a>
+              </li>
+            </div>
           ))}
-        </NavList>
+        </ul>
       </nav>
-      <ProfileContainer>
+      <h3 className="header-title">{title}</h3>
+      {/* <div className="search-container">
+        <input
+          type={inputType}
+          placeholder={inputPlaceHolder}
+          className="search-input"
+        />
+        <FaSearch size={30} color="black" />
+      </div> */}
+      <nav>
+        <ul className="web-nav-list">
+          {navLinks?.slice(0, maxLinks).map((link, index) => (
+            <li
+              key={index}
+              className="web-nav-item"
+              style={customStyles.navItem}
+            >
+              <a
+                href={link.url}
+                className="web-nav-link"
+                style={customStyles.navLink}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      {/* <div className="mobile-icon">
+        <FaUserCircle size={50} />
+      </div> */}
+      {/* <div className="profile-container">
         <FaUserCircle size={30} color="black" />
-        <Profile>{profile}</Profile>
-      </ProfileContainer>
-      <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
-    </HeaderContainer>
+        <p className="profile-text">{profile}</p>
+      </div> */}
+      <button className="logout-button" onClick={handleLogout}>
+        Logout
+      </button>
+      <button className="mobile-button" onClick={handleLogout}>
+        <FiLogOut size={50} />
+      </button>
+    </header>
   );
 };
 
-// export default ReusableNavbar;
+export default Header;

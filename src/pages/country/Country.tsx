@@ -39,7 +39,7 @@ const Country: React.FC = () => {
       </Grid>
      
       <Grid xs={12} md={3}>
-        <ReuseableButton variant="solid" size="sm" title="Add" type="submit" />
+        <ReuseableButton variant="solid" size="sm" title="Add" type="submit"  styles={{backgroundColor:"#735DA5"}}/>
       </Grid>
     </Grid>
     </form>
