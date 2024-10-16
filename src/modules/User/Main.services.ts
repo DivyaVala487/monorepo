@@ -303,4 +303,34 @@ export const getAllCities = async (data: any): Promise<ResponseDto> => {
     }
 };
 
+export const getAllCountries = async (): Promise<ResponseDto> => {
 
+    let response: ResponseDto;
+    try {
+        const getAllCountires = await CountryModel.findAll({
+
+        });
+
+        if (getAllCountires.length === 0) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("NO_COUNTRY_FOUND"),
+            });
+        }
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("COUNTRY_FOUND"),
+            data: getAllCountires,
+        });
+    } catch (error) {
+
+
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};

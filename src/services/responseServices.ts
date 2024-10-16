@@ -89,7 +89,9 @@ export const getResponseMessage = (message: string) => {
     // UNABLE_TO_ADD_CITY:"UNABLE_TO_ADD_CITY",
     NO_CITIES_PRESENT: "No Cities Present",
     CITIES_FOUND: "Cities Found",
-    STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY: "STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY"
+    STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY: "STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY",
+    NO_COUNTRY_FOUND: "No Countries Found",
+    COUNTRY_FOUND: "Country Found"
   };
 
   return messageConstant[message] || null;
