@@ -17,6 +17,11 @@ export const CountryModel: ModelDefined<ICountry, ICountryCreation> = sequelize.
             type: DataTypes.STRING,
             allowNull: false,
         },
+        flag: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null
+        },
         created_at: {
             type: DataTypes.DATE,
             allowNull: false,

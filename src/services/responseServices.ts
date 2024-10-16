@@ -91,7 +91,8 @@ export const getResponseMessage = (message: string) => {
     CITIES_FOUND: "Cities Found",
     STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY: "STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY",
     NO_COUNTRY_FOUND: "No Countries Found",
-    COUNTRY_FOUND: "Country Found"
+    COUNTRY_FOUND: "Country Found",
+    IMAGE_IS_REQUIRED: "Image Is Required"
   };
 
   return messageConstant[message] || null;

@@ -8,7 +8,14 @@ import Joi from "joi";
 import { schemaValidation } from "@utils/helperFunctions";
 import { IStateCreation } from "@dtos/state.dtos";
 import { ICityCreation } from "@dtos/city.dtos";
+import { v2 as cloudinary } from "cloudinary";
 
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // for adding the  country
 
@@ -24,14 +31,21 @@ export const addCountry = async (req: Request, res: Response): Promise<any> => {
             });
 
 
+
         const validateResult: ResponseDto = await schemaValidation(countryDetails, schema);
         if (!validateResult.status) {
             response = sendResponse(validateResult);
             return res.json(response);
         }
+        if (!req.file) {
+            return res.json(setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("IMAGE_IS_REQUIRED"),
+            }));
+        }
 
 
-        response = await MainService.addCountry(countryDetails);
+        response = await MainService.addCountry(countryDetails, req.file);
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

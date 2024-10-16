@@ -7,8 +7,9 @@ import { IStateCreation } from "@dtos/state.dtos";
 import { StateModel } from "../../models/state.model";
 import { CityModel } from "../../models/city.model";
 import { Op } from "sequelize";
+import { v2 as cloudinary } from "cloudinary";
 
-export const addCountry = async (countryDetails: ICountryCreation): Promise<ResponseDto> => {
+export const addCountry = async (countryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
     try {
@@ -33,10 +34,16 @@ export const addCountry = async (countryDetails: ICountryCreation): Promise<Resp
             });
         }
 
+        const uploadResponse = await cloudinary.uploader.upload(file.path, {
+            folder: "uploads",
+            allowed_formats: ["jpg", "jpeg", "png"]
+        });
+
 
         const newCountry = await CountryModel.create(
             {
                 name: formattedName,
+                flag: uploadResponse.secure_url,
             },
             { transaction }
         );
