@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const BaseURL = "http://localhost:3000/api";
+const BaseURL = "http://localhost:8000/api";
 
 const getHeaders = async (header?: boolean) => {
   const headers: Record<string, string> = {
