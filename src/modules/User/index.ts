@@ -9,7 +9,7 @@ router.get("/get-all-countries", MainControllers.getAllCountries);
 router.post("/add-state", MainControllers.addState);
 router.post("/all-states", MainControllers.getAllStates);
 router.post("/create-city", MainControllers.addCity);
-router.get("/get-all-cities", MainControllers.getAllCities);
+router.post("/get-all-cities", MainControllers.getAllCities);
 
 
 export default router;

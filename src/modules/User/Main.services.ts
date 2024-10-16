@@ -152,8 +152,13 @@ export const getAllStates = async (data: any): Promise<ResponseDto> => {
 
         const FindAllStates = await StateModel.findAll({
             where: { country_id },
-
-
+            include: [
+                {
+                    model: CountryModel,
+                    as: "country",
+                    attributes: ["name"],
+                },
+            ],
         });
 
         console.log(FindAllStates, "FindAllStates");
@@ -254,7 +259,7 @@ export const getAllCities = async (data: any): Promise<ResponseDto> => {
     try {
 
         const countryExists = await CountryModel.findOne({
-            where: { country_id }
+            where: { country_id },
         });
 
         if (!countryExists) {
@@ -266,7 +271,7 @@ export const getAllCities = async (data: any): Promise<ResponseDto> => {
 
 
         const stateExists = await StateModel.findOne({
-            where: { state_id, country_id }
+            where: { state_id, country_id },
         });
 
         if (!stateExists) {
@@ -279,13 +284,23 @@ export const getAllCities = async (data: any): Promise<ResponseDto> => {
 
         const allCities = await CityModel.findAll({
             where: {
-                [Op.and]: [
-                    { country_id: country_id },
-                    { state_id: state_id }
-                ]
-            }
+                [Op.and]: [{ country_id: country_id }, { state_id: state_id }],
+            },
+            include: [
+                {
+                    model: CountryModel,
+                    as: "country",
+                    attributes: ["name"],
+                },
+                {
+                    model: StateModel,
+                    as: "state",
+                    attributes: ["state_name"],
+                },
+            ],
         });
 
+        // Check if cities are present
         if (!allCities || allCities.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
