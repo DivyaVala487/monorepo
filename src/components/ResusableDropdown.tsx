@@ -5,7 +5,7 @@ import Option from '@mui/joy/Option';
 
 // Define interface for the props
 interface SelectIndicatorProps {
-  options: Array<{ label: string; value: string }>; // Array of options to select from
+  options: Array<{ label: string; value: string | number }>; // Array of options to select from
   placeholder?: string; // Placeholder text
   width?: number; // Custom width for the select component
   onChange?: (value: string) => void; // Event handler for value change
