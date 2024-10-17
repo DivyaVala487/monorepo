@@ -92,7 +92,14 @@ export const getResponseMessage = (message: string) => {
     STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY: "STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY",
     NO_COUNTRY_FOUND: "No Countries Found",
     COUNTRY_FOUND: "Country Found",
-    IMAGE_IS_REQUIRED: "Image Is Required"
+    IMAGE_IS_REQUIRED: "Image Is Required",
+    CATEGORY_ALREADY_EXISTS: "Category Already Exists",
+    FAILED_TO_CREATE_CATEGORY: "Failed To Create Category",
+    CATEGORY_CREATED_SUCCESSFULLY: "Category Created Successfully",
+    CATEGORY_NOT_FOUND: "Category Not Found",
+    CATEGORY_FOUND: "Category Found",
+    SUBCATEGORY_CREATED_SUCCESSFULLY: "Sub Category Created Successfully",
+
   };
 
   return messageConstant[message] || null;

@@ -9,6 +9,8 @@ import { schemaValidation } from "@utils/helperFunctions";
 import { IStateCreation } from "@dtos/state.dtos";
 import { ICityCreation } from "@dtos/city.dtos";
 import { v2 as cloudinary } from "cloudinary";
+import { ICategoryCreation } from "@dtos/category.dtos";
+import { ISubcategoryCreation } from "@dtos/subcategory.dto";
 
 
 cloudinary.config({
@@ -210,6 +212,104 @@ export const getAllCountries = async (req: Request, res: Response): Promise<any>
     try {
         let response: ResponseDto;
         response = await MainService.getAllCountries();
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+
+export const addCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        const categoryDetails: ICategoryCreation = req.body;
+        console.log(categoryDetails, "categoryDetails");
+        const schema = Joi.object()
+            .options({})
+            .keys({
+                name: Joi.string().required().label("Category Name")
+            });
+        const validateResult: ResponseDto = await schemaValidation(categoryDetails, schema);
+        if (!validateResult.status) {
+            response = sendResponse(validateResult);
+            return res.json(response);
+        }
+        if (!req.file) {
+            return res.json(setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("IMAGE_IS_REQUIRED"),
+            }));
+        }
+
+
+        response = await MainService.addCategory(categoryDetails, req.file);
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+
+export const getAllCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        response = await MainService.getAllCategory();
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+export const addSubCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        const subCategoryDetails: ISubcategoryCreation = req.body;
+        console.log(subCategoryDetails, "subCategoryDetails");
+        const schema = Joi.object()
+            .options({})
+            .keys({
+                category_id: Joi.number().required().label("category_id"),
+                sub_category_name: Joi.string().required().label("sub_category_name")
+            });
+
+
+        const validateResult: ResponseDto = await schemaValidation(subCategoryDetails, schema);
+        if (!validateResult.status) {
+            response = sendResponse(validateResult);
+            return res.json(response);
+        }
+        if (!req.file) {
+            return res.json(setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("IMAGE_IS_REQUIRED"),
+            }));
+        }
+
+        response = await MainService.addSubCategory(subCategoryDetails, req.file);
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

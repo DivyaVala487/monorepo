@@ -8,6 +8,10 @@ import { StateModel } from "../../models/state.model";
 import { CityModel } from "../../models/city.model";
 import { Op } from "sequelize";
 import { v2 as cloudinary } from "cloudinary";
+import { CategoryModel } from "../../models/category.model";
+import slugify from "slugify";
+import { ISubcategoryCreation } from "@dtos/subcategory.dto";
+import { SubcategoryModel } from "../../models/subcategory.model";
 
 export const addCountry = async (countryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
@@ -347,6 +351,182 @@ export const getAllCountries = async (): Promise<ResponseDto> => {
     } catch (error) {
 
 
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+
+
+
+export const addCategory = async (categoryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+    try {
+
+        const { name } = categoryDetails;
+        console.log(name, "names");
+
+
+        const formattedName = name.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+
+
+        const slug = slugify(name, {
+            lower: true,
+            strict: true
+        });
+
+        const existingCategory = await CategoryModel.findOne({
+            where: { name: formattedName },
+            transaction,
+        });
+
+        console.log(existingCategory, "existingCategory");
+
+        if (existingCategory) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("CATEGORY_ALREADY_EXISTS"),
+            });
+        }
+
+        console.log("before_upload");
+        const uploadResponse = await cloudinary.uploader.upload(file.path, {
+            folder: "upload",
+            allowed_formats: ["jpg", "jpeg", "png"]
+        });
+        console.log("another");
+        console.log(uploadResponse, "uploadResponse");
+
+        const newCategory = await CategoryModel.create(
+            {
+                name: formattedName,
+                slug: slug,
+                icon: uploadResponse.secure_url,
+            },
+            { transaction }
+        );
+
+        console.log(newCategory, "newCategory");
+        if (!newCategory) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("FAILED_TO_CREATE_CATEGORY"),
+            });
+        }
+
+        await transaction.commit();
+
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("CATEGORY_CREATED_SUCCESSFULLY"),
+            data: newCategory,
+        });
+
+    } catch (error) {
+        await transaction.rollback();
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+
+export const getAllCategory = async (): Promise<ResponseDto> => {
+
+    let response: ResponseDto;
+    try {
+        const getAllCategory = await CategoryModel.findAll({
+
+        });
+
+        if (getAllCategory.length === 0) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("CATEGORY_NOT_FOUND"),
+            });
+        }
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("CATEGORY_FOUND"),
+            data: getAllCategory,
+        });
+    } catch (error) {
+
+
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+export const addSubCategory = async (subCategoryDetails: ISubcategoryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+    try {
+
+        const { category_id, sub_category_name } = subCategoryDetails;
+        const existingCategory = await CategoryModel.findOne({
+            where: { category_id },
+            transaction,
+        });
+
+        if (!existingCategory) {
+
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("CATEGORY_NOT_FOUND"),
+            });
+        }
+        const uploadResponse = await cloudinary.uploader.upload(file.path, {
+            folder: "upload",
+            allowed_formats: ["jpg", "jpeg", "png"]
+        });
+
+        const subcategoriesCreation = await SubcategoryModel.create(
+            {
+                category_id, sub_category_name, icon: uploadResponse.secure_url,
+            },
+            { transaction }
+        );
+
+        if (!subcategoriesCreation) {
+
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("STATE_CREATION_FAILED"),
+            });
+        }
+
+
+        await transaction.commit();
+
+
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORY_CREATED_SUCCESSFULLY"),
+            data: subcategoriesCreation,
+        });
+    } catch (error) {
+
+        await transaction.rollback();
         const result: ResponseDto = setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
