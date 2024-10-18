@@ -7,8 +7,11 @@ export interface ICountry {
 }
 
 export interface ICountryCreation {
-    name: string;
+    country_id?: number;
+    name?: string;
     flag?: string;
+    created_at?: Date;
+    updated_at?: Date;
 }
 
 

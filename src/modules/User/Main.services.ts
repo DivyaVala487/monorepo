@@ -147,44 +147,49 @@ export const addState = async (stateDetails: IStateCreation): Promise<ResponseDt
 };
 
 
-export const getAllStates = async (data: any): Promise<ResponseDto> => {
+export const getAllStates = async (): Promise<ResponseDto> => {
 
-    const { country_id } = data;
     let response: ResponseDto;
     try {
-
-
-        const FindAllStates = await StateModel.findAll({
-            where: { country_id },
+        
+        const FindAllCountriesWithStates:any = await CountryModel.findAll({
             include: [
                 {
-                    model: CountryModel,
-                    as: "country",
-                    attributes: ["name"],
+                    model: StateModel,
+                    as: "states", 
+                    attributes: ["state_name", "short_name", "gst"], 
                 },
             ],
+            attributes: ["country_id", "name", "flag", "created_at", "updated_at"], // Include country attributes
         });
 
-        console.log(FindAllStates, "FindAllStates");
+        console.log(FindAllCountriesWithStates, "FindAllCountriesWithStates");
 
-        if (FindAllStates.length === 0) {
-
-
+        if (FindAllCountriesWithStates.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
-                message: getResponseMessage("NO_STATE_PRESENT"),
+                message: getResponseMessage("NO_COUNTRY_WITH_STATES_PRESENT"),
             });
         }
 
+        // Transform the result into the desired format
+        const transformedData = FindAllCountriesWithStates.flatMap((country: { states: { state_name: any; short_name: any; gst: any; }[]; country_id: any; name: any; flag: any; }) => {
+            return country.states.map((state: { state_name: any; short_name: any; gst: any; }) => ({
+                country_id: country.country_id,
+                name: country.name,
+                flag: country.flag,
+                state_name: state.state_name,
+                short_name: state.short_name,
+                gst: state.gst,
+            }));
+        });
 
         return setSuccessResponse({
             statusCode: 200,
-            message: getResponseMessage("STATES_ARE_PRESENT"),
-            data: FindAllStates,
+            message: getResponseMessage("COUNTRIES_AND_STATES_ARE_PRESENT"),
+            data: transformedData,
         });
     } catch (error) {
-
-
         const result: ResponseDto = setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
@@ -194,6 +199,8 @@ export const getAllStates = async (data: any): Promise<ResponseDto> => {
         return result;
     }
 };
+
+
 
 
 export const addCity = async (data: any): Promise<ResponseDto> => {
@@ -673,4 +680,62 @@ export const getStates = async (): Promise<ResponseDto> => {
         return result;
     }
 };
+
+export const getCities = async (): Promise<ResponseDto> => {
+    let response: ResponseDto;
+    try {
+        // Fetch all countries with associated states and cities
+        const FindAllCountries = await CountryModel.findAll({
+            include: [
+                {
+                    model: StateModel,
+                    as: "states", // Ensure alias is "states"
+                    attributes: ["state_name", "state_id"],
+                    include: [
+                        {
+                            model: CityModel,
+                            as: "cities1", // Ensure alias is "cities"
+                            attributes: ["city_name"],
+                        },
+                    ],
+                },
+            ],
+            attributes: ["name"], // Get country name
+        });
+
+        // Check if any countries are found
+        if (!FindAllCountries || FindAllCountries.length === 0) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("NO_COUNTRY_PRESENT"),
+            });
+        }
+
+        // Prepare the final result format
+        const result = FindAllCountries.map((country: any) => ({
+            country: country?.name || "", // Country name
+            states: country?.states?.map((state: any) => ({
+                state_name: state?.state_name || "", // State name
+                cities: state?.cities?.map((city: any) => city?.city_name) || [] // List of cities
+            })) || [] // Ensure empty array if no states found
+        }));
+
+        // Return success response with the formatted data
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("COUNTRIES_ARE_PRESENT"),
+            data: result,
+        });
+    } catch (error) {
+        // Return error response in case of an exception
+        return setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+    }
+};
+
+
 

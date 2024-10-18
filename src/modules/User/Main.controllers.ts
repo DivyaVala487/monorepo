@@ -101,23 +101,7 @@ export const addState = async (req: Request, res: Response): Promise<any> => {
 export const getAllStates = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
-        const country_id: number = req.body;
-
-        const schema = Joi.object()
-            .options({})
-            .keys({
-                country_id: Joi.number().required().label("country_id"),
-            });
-
-
-        const validateResult: ResponseDto = await schemaValidation(country_id, schema);
-        if (!validateResult.status) {
-            response = sendResponse(validateResult);
-            return res.json(response);
-        }
-
-
-        response = await MainService.getAllStates(country_id);
+        response = await MainService.getAllStates();
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {
@@ -389,10 +373,28 @@ export const editSubCategory = async (req: Request, res: Response): Promise<any>
 export const getStates = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
-
-
-
         response = await MainService.getStates();
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+export const getCities = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+
+
+
+        response = await MainService.getCities();
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

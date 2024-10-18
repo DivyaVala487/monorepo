@@ -10,11 +10,13 @@ router.get("/get-all-countries", MainControllers.getAllCountries);
 // for adding the state
 router.post("/add-state", MainControllers.addState);
 // for getting all the states based up on the
-router.post("/all-states", MainControllers.getAllStates);
+router.get("/all-states", MainControllers.getAllStates);
 router.get("/get-states", MainControllers.getStates);
 router.post("/create-city", MainControllers.addCity);
 // need to change
 router.post("/get-all-cities", MainControllers.getAllCities);
+// for getting all cities initially
+router.get("/get-cities", MainControllers.getCities);
 // for adding the category
 router.post("/add-category", upload.single("image"), MainControllers.addCategory);
 router.get("/get-all-category", MainControllers.getAllCategory);
