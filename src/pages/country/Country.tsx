@@ -8,27 +8,53 @@ import { networkUrls } from "../../services/networkrls";
 import Alerts from "../../components/ReusableAlerts";
 import ReusableDataGrid from "../../components/ReusableDataGrid";
 import { GridColDef } from "@mui/x-data-grid";
-
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "country", headerName: "Country", flex: 1 },
-];
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton } from "@mui/material";
 
 const Country: React.FC = () => {
-  const [formValues, setFormValues] = useState<any>({ country: "" });
+  const [formValues, setFormValues] = useState<any>({
+    country: "",
+    countryicon: "",
+  });
   const [errors, setErrors] = useState<any>({});
   const [alert, showAlert] = useState<any>(false);
   const [rows, setRows] = useState<{ id: number; country: string }[]>([]);
+  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(null);
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 90 },
+    { field: "country", headerName: "Country", flex: 1 },
+    { field: "countryicon", headerName: "Country icon", flex: 1,renderCell: (params) => (
+      <img
+        src={params.value} 
+        alt="Country Icon"
+        style={{ width: '45px', height: '45px', objectFit: 'cover'}} 
+      />
+    ), },
+  ];
+
+  const handleEdit = (row: any) => {
+    console.log("Editing row:", row);
+    // Implement edit logic here
+  };
+
+  const handleDelete = async (id: number) => {
+    console.log("Deleting row with ID:", id);
+    // Implement delete logic here
+  };
 
   const fetchCountries = async () => {
     try {
       const response = await Get(networkUrls.getAllCountry, false);
-      console.log(response.data.data,"response")
+      console.log(response.data.data, "response");
       if (response?.data?.api_status === 200) {
-        const fetchedCountries = response.data.data.map((country: any, index: number) => ({
-          id: index + 1,
-          country: country.name
-        }));
+        const fetchedCountries = response.data.data.map(
+          (country: any, index: number) => ({
+            id: index + 1,
+            country: country.name,
+            countryicon:country.flag
+          })
+        );
         setRows(fetchedCountries);
       } else {
         console.error("Error fetching countries:", response);
@@ -47,17 +73,20 @@ const Country: React.FC = () => {
     setErrors(validationErrors);
 
     if (!validationErrors.country) {
-      const payload: any = {
-        name: formValues.country,
-      };
+      const formData = new FormData();
+        formData.append("name", formValues.country);
+        formData.append("image", formValues.countryicon);
       try {
-        const response = await Post(networkUrls.addCountry, payload, false);
+        const response = await Post(networkUrls.addCountry, formData, false);
         if (response?.data?.api_status === 200) {
           showAlert(true);
           setFormValues({ country: "" });
           fetchCountries();
+          setSubmissionSuccess(true)
         } else {
           console.error("Error adding country:", response);
+          setSubmissionSuccess(false)
+          showAlert(true);
         }
       } catch (error) {
         console.error("Error adding country:", error);
@@ -65,7 +94,12 @@ const Country: React.FC = () => {
     }
   };
 
-  const handleChange = (value: string, fieldName: string) => {
+  const handleFileChange = (e: any) => {
+    const file = e.target.files[0];
+    handleChange(file, "countryicon");
+  };
+
+  const handleChange = (value: string | File, fieldName: string) => {
     setFormValues((prevValues: any) => {
       const updatedValues = {
         ...prevValues,
@@ -73,6 +107,8 @@ const Country: React.FC = () => {
       };
 
       const validationErrors = validateForm(updatedValues);
+      setErrors(validationErrors);
+
       setErrors(validationErrors);
 
       return updatedValues;
@@ -84,11 +120,15 @@ const Country: React.FC = () => {
       <form onSubmit={handleSubmit}>
         {alert && (
           <Alerts
-            message="Country Added"
-            backgroundColor="lightblue"
+          message={
+            submissionSuccess
+              ? "Country Added Successfully"
+              : "Country Submission Failed"
+          }
+            backgroundColor={submissionSuccess ? "green" :"red"}
+          icon={submissionSuccess ? "✅" : "❌"}
             textColor="light"
             duration={2000}
-            icon="✅"
             borderRadius="8px"
             boxShadow="0 4px 8px rgba(0,0,0,0.2)"
             position="top-right"
@@ -114,11 +154,29 @@ const Country: React.FC = () => {
               type="text"
               placeholder="Enter Country"
               size="sm"
+              value={formValues.country}
               style={{ width: "333px !important" }}
               onChange={(e) => handleChange(e.target.value, "country")}
               label="Country"
             />
-            {errors?.country && <p className="error-message">{errors?.country}</p>}
+            {errors?.country && (
+              <p className="error-message">{errors?.country}</p>
+            )}
+          </Grid>
+          <Grid xs={12} md={3}>
+            <InputField
+              type="file"
+              placeholder=""
+              label="Country Icon"
+              name="countryicon"
+              size="sm"
+              style={{ width: "333px", height: "36px" }}
+                value={formValues.categoryicon}
+              onChange={handleFileChange}
+            />
+            {errors?.categoryicon && (
+              <p className="error-message">{errors?.countryicon}</p>
+            )}
           </Grid>
 
           <Grid xs={12} md={3}>
@@ -127,7 +185,7 @@ const Country: React.FC = () => {
               size="sm"
               title="Add"
               type="submit"
-              styles={{ backgroundColor: "#735DA5" }}
+              styles={{ backgroundColor: "#735DA5", marginTop: "30px" }}
             />
           </Grid>
         </Grid>

@@ -46,10 +46,11 @@ const ReusableDataGrid: React.FC<ReusableDataGridProps> = ({
   };
 
   return (
-    <Box sx={{ height: 400, width: "100%" }}>
+    <Box sx={{ marginLeft:"20px", width: "95%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
+        // getRowHeight={() => 100}
         initialState={{
           pagination: {
             paginationModel: { pageSize: initialPageSize },

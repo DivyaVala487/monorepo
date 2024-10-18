@@ -264,6 +264,7 @@ const City: React.FC = () => {
               options={countries}
               placeholder="Select your country"
               width={333}
+              label="Country"
               onChange={(value) => handleCountryChange(value)}
             />
             {errors?.country && (
@@ -275,6 +276,7 @@ const City: React.FC = () => {
               options={states}
               placeholder="Select your state"
               width={300}
+              label="State"
               onChange={(value) => handleStateChange(value)}
             />
             {errors?.state && <p className="error-message">{errors?.state}</p>}
@@ -297,6 +299,7 @@ const City: React.FC = () => {
               size="sm"
               title="Submit"
               type="submit"
+              styles={{marginTop:"30px"}}
             />
           </Grid>
         </Grid>

@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({
   profile,
   inputType,
   inputPlaceHolder,
-  maxLinks = 5,
+  maxLinks = 6,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleLogout = () => {

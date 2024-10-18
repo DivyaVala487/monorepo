@@ -4,5 +4,7 @@ export const networkUrls = {
    addState: "/user/add-state",
    getAllStates: "/user/all-states",
    addCity: "/user/create-city",
-   getAllCitys:"/user/get-all-cities"
+   getAllCitys:"/user/get-all-cities",
+   addCategory:"/user/add-category",
+   getCategory:"/user/get-all-category"
 };

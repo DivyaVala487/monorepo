@@ -62,7 +62,9 @@ const States: React.FC = () => {
       console.error("Error fetching states", error);
     }
   };
-
+// useEffect(()=>{
+// fetc
+// },[])
   // Handle form submission (POST request to add state)
   // const handleSubmit = async (e: any) => {
   //   e.preventDefault();

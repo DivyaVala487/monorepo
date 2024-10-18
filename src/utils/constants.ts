@@ -8,10 +8,12 @@ import {
 
 
 export const navLinks = [
-    { label: "Home", url: "/" },
-    { label: "Country", url: "/country" },
+    // { label: "Home", url: "/" },
+    { label: "Country", url: "/" },
     { label: "State", url: "/state" },
     { label: "City", url: "/city" },
+    { label: "Category", url: "/category" },
+    { label: "SubCategory", url: "/sub-category" },
   ];
   
   export const headerStyles = {

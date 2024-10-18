@@ -5,7 +5,7 @@ const BaseURL = "http://localhost:8000/api";
 
 const getHeaders = async (header?: boolean) => {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'multipart/form-data'
   };
   if (header) {
     // headers.Authorization = `Bearer ${getJwt()}`;
@@ -24,11 +24,14 @@ const Get = async (url: string, isRequired: boolean) => {
 };
 
 const Post = async (url: string, payload: any, isRequired: boolean) => {
+  console.log("INSIDE POST", payload);
   const headers = await getHeaders(isRequired);
   try {
     const response = await axios.post(`${BaseURL}${url}`, payload, { headers });
+    console.log("Response", response);
     return response;
   } catch (error) {
+    console.log("Response", error);
     throw error;
   }
 };

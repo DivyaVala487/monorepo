@@ -1,7 +1,7 @@
 import React from "react";
 import Input from "@mui/joy/Input";
 import { Textarea, Typography } from "@mui/joy";
-
+import "./styles.css"
 interface InputFieldProps {
   placeholder?: string;
   variant?: "solid" | "outlined" | "plain";
@@ -27,6 +27,7 @@ interface InputFieldProps {
   maxRows?: number;
   format?: string;
   onBlur?:any;
+  ref?:any
   //   slotProps?: SlotProps;
 }
 
@@ -50,13 +51,14 @@ const InputField: React.FC<InputFieldProps> = ({
   multiline,
   minRows,
   maxRows,
-  onBlur
+  onBlur,
+  ref
   //   slotProps,
 }) => {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
       {label && (
-        <Typography component="label" htmlFor={id}>
+        <Typography component="label" htmlFor={id} className="label-heading">
           {label}
         </Typography>
       )}
@@ -77,6 +79,9 @@ const InputField: React.FC<InputFieldProps> = ({
           sx={style}
           id={id}
           name={name}
+          slotProps={{
+            input:{ref}
+          }}
           //   slotProps={slotProps}
         />
       ) : (

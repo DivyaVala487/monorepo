@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Select, { selectClasses } from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
+import { Typography } from '@mui/joy';
 // import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 
 // Define interface for the props
@@ -11,7 +12,9 @@ interface SelectIndicatorProps {
   onChange?: (value: string) => void; // Event handler for value change
   value?:string;
   name?:string;
-  onClose?:any
+  onClose?:any;
+  label?:string;
+  id?:string;
 }
 
 const Dropdown: React.FC<SelectIndicatorProps> = ({
@@ -21,9 +24,17 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
   onChange,
   value,
   name,
+  label,
+  id,
   onClose
 }) => {
   return (
+    <div  style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+    {label && (
+      <Typography component="label" htmlFor={id} className="label-heading">
+        {label}
+      </Typography>
+    )}
     <Select
     value={value}
     name={name}
@@ -47,6 +58,7 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
         </Option>
       ))}
     </Select>
+    </div>
   );
 };
 

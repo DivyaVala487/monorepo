@@ -68,9 +68,9 @@ const Alerts: React.FC<AlertProps> = ({
   const getPositionStyle = () => {
     switch (position) {
       case 'top-left':
-        return { top: '20px', left: '20px', transform: 'none' };
+        return { top: '66px', left: '20px', transform: 'none' };
       case 'top-right':
-        return { top: '20px', right: '20px', transform: 'none' };
+        return { top: '66px', right: '20px', transform: 'none' };
       case 'top-center':
         return { top: '20px', left: '50%', transform: 'translateX(-50%)' };
       case 'bottom-left':
@@ -96,23 +96,26 @@ const Alerts: React.FC<AlertProps> = ({
       style={{
         backgroundColor,
         color: textColor,
-        borderRadius,
+        // borderRadius,
         boxShadow,
         position: 'fixed',
         ...getPositionStyle(), // Apply dynamic position styles
         padding,
         margin,
-        border: `${borderWidth} solid ${borderColor}`,
+        // border: `${borderWidth} solid ${borderColor}`,
         zIndex,
         textAlign,
         fontSize,
         fontWeight,
         height, 
-        width,  
+        // width,  
+        display:"flex",
+        justifyContent:"space-between",
+        alignItems:"center"
       }}
     >
       {icon && <span>{icon}</span>}
-      <span>{message}</span>
+      <span style={{color:"white"}}>{message}</span>
       {showCloseButton && (
         <button
           style={{ color: closeButtonColor, marginLeft: alertPosition}}
