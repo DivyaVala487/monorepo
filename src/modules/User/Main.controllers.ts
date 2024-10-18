@@ -32,8 +32,6 @@ export const addCountry = async (req: Request, res: Response): Promise<any> => {
                 name: Joi.string().required().label("Country Name"),
             });
 
-
-
         const validateResult: ResponseDto = await schemaValidation(countryDetails, schema);
         if (!validateResult.status) {
             response = sendResponse(validateResult);
@@ -133,6 +131,8 @@ export const getAllStates = async (req: Request, res: Response): Promise<any> =>
         return res.json(result);
     }
 };
+
+
 
 
 
@@ -248,6 +248,7 @@ export const addCategory = async (req: Request, res: Response): Promise<any> => 
                 message: getResponseMessage("IMAGE_IS_REQUIRED"),
             }));
         }
+        // console.log(req.file , "request");
 
 
         response = await MainService.addCategory(categoryDetails, req.file);
@@ -310,6 +311,88 @@ export const addSubCategory = async (req: Request, res: Response): Promise<any> 
         }
 
         response = await MainService.addSubCategory(subCategoryDetails, req.file);
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+export const deleteSubCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        const { categoryId, subCategoryId } = req.params;
+        response = await MainService.deleteSubCategory(Number(categoryId), Number(subCategoryId));
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+
+export const editSubCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        const subCategoryDetails: ISubcategoryCreation = req.body;
+        console.log(subCategoryDetails, "subCategoryDetails");
+        const schema = Joi.object()
+            .options({})
+            .keys({
+                category_id: Joi.number().required().label("category_id"),
+                sub_category_name: Joi.string().required().label("sub_category_name")
+            });
+
+
+        const validateResult: ResponseDto = await schemaValidation(subCategoryDetails, schema);
+        if (!validateResult.status) {
+            response = sendResponse(validateResult);
+            return res.json(response);
+        }
+        if (!req.file) {
+            return res.json(setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("IMAGE_IS_REQUIRED"),
+            }));
+        }
+
+        response = await MainService.addSubCategory(subCategoryDetails, req.file);
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
+
+
+export const getStates = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+
+
+
+        response = await MainService.getStates();
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

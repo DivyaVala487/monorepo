@@ -536,3 +536,141 @@ export const addSubCategory = async (subCategoryDetails: ISubcategoryCreation, f
         return result;
     }
 };
+
+
+export const deleteSubCategory = async (categoryId: number, subCategoryId: number): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+
+    try {
+
+        const existingSubCategory = await SubcategoryModel.findOne({
+            where: {
+                [Op.and]: [
+                    { subcategory_id: subCategoryId },
+                    { category_id: categoryId }
+                ]
+            },
+            transaction,
+        });
+
+        if (!existingSubCategory) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 404,
+                message: getResponseMessage("SUBCATEGORY_NOT_FOUND"),
+            });
+        }
+
+
+        const deleteResult = await SubcategoryModel.destroy({
+            where: {
+                [Op.and]: [
+                    { subcategory_id: subCategoryId },
+                    { category_id: categoryId }
+                ]
+            },
+            transaction,
+        });
+
+        if (!deleteResult) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("SUBCATEGORY_DELETION_FAILED"),
+            });
+        }
+
+        await transaction.commit();
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORY_DELETED_SUCCESSFULLY"),
+        });
+    } catch (error) {
+        await transaction.rollback();
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+
+export const getStates = async (): Promise<ResponseDto> => {
+    let response: ResponseDto;
+    try {
+        // Fetch all states along with the associated country
+        const FindAllStates = await StateModel.findAll({
+            include: [
+                {
+                    model: CountryModel,
+                    as: "country",
+                    attributes: ["name"],
+                },
+            ],
+            attributes: ["state_name", "short_name", "country_id"], // Use the correct column names here
+        });
+
+        // Check if no states are found
+        if (FindAllStates.length === 0) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("NO_STATE_PRESENT"),
+            });
+        }
+
+        // Transform the data to the desired format
+        const countryMap: { [key: string]: any } = {};
+
+        // Group states by country and ensure uniqueness
+        FindAllStates.forEach((state: any) => {
+            const countryName = state.country.name;
+            const stateName = state.state_name; // Corrected from state.name to state.state_name
+            const shortName = state.short_name; // Corrected from state.shortname to state.short_name
+
+            // If the country is not already in the map, add it with empty sets for states and shortnames
+            if (!countryMap[countryName]) {
+                countryMap[countryName] = {
+                    country: countryName,
+                    states: new Set(),
+                    shortnames: new Set(),
+                };
+            }
+
+            // Add state name and shortname to the respective sets to ensure uniqueness
+            if (stateName) {
+                countryMap[countryName].states.add(stateName);
+            }
+            if (shortName) {
+                countryMap[countryName].shortnames.add(shortName);
+            }
+        });
+
+        // Convert sets to arrays and the map to an array of objects
+        const formattedResult = Object.values(countryMap).map((entry: any) => ({
+            country: entry.country,
+            states: Array.from(entry.states),       // Convert the set to an array
+            shortnames: Array.from(entry.shortnames), // Convert the set to an array
+        }));
+
+        // Return the success response with the formatted data
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("STATES_ARE_PRESENT"),
+            data: formattedResult,
+        });
+    } catch (error) {
+        // Return the error response in case of an exception
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+

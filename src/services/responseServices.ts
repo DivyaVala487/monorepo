@@ -99,6 +99,9 @@ export const getResponseMessage = (message: string) => {
     CATEGORY_NOT_FOUND: "Category Not Found",
     CATEGORY_FOUND: "Category Found",
     SUBCATEGORY_CREATED_SUCCESSFULLY: "Sub Category Created Successfully",
+    SUBCATEGORY_NOT_FOUND: "Sub category Not Found",
+    SUBCATEGORY_DELETION_FAILED: "Subcategory Deletion Failed",
+    SUBCATEGORY_DELETED_SUCCESSFULLY: "Subcategory Deleted Successfully"
 
   };
 
