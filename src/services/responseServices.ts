@@ -102,10 +102,11 @@ export const getResponseMessage = (message: string) => {
     SUBCATEGORY_NOT_FOUND: "Sub category Not Found",
     SUBCATEGORY_DELETION_FAILED: "Subcategory Deletion Failed",
     SUBCATEGORY_DELETED_SUCCESSFULLY: "Subcategory Deleted Successfully",
-    NO_COUNTRY_WITH_STATES_AND_CITIES_PRESENT:"No Country With States and Cities Present",
-    COUNTRIES_STATES_AND_CITIES_ARE_PRESENT:"Countries States and Cities  Are Present",
-
-
+    NO_COUNTRY_WITH_STATES_AND_CITIES_PRESENT: "No Country With States and Cities Present",
+    COUNTRIES_STATES_AND_CITIES_ARE_PRESENT: "Countries States and Cities  Are Present",
+    SUBCATEGORY_UPDATED_SUCCESSFULLY: "Subcategory Updated Successfully",
+    FILES_MISMATCH: "Files Mismatch",
+    SUBCATEGORY_ALREADY_EXISTS: "Suncategory Already Exists"
   };
 
   return messageConstant[message] || null;

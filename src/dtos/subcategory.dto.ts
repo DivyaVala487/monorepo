@@ -11,4 +11,5 @@ export interface ISubcategoryCreation {
     category_id: number;
     sub_category_name: string;
     icon?: string | null;
+    subcategory_id?: number;
 }

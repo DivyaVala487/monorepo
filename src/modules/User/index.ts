@@ -3,6 +3,7 @@ import * as MainControllers from "./Main.controllers";
 const router = Router();
 import multer from "multer";
 const upload = multer({ dest: "temp/" });
+// const upload = multer({ storage: multerStorage }).fields([{ name: 'image', maxCount: 10 }]); // Adjust maxCount as necessary
 
 /*-------------------------------------------------------------
 |                API"S FOR Countries , States and Cities      |
@@ -26,9 +27,9 @@ router.get("/get-cities", MainControllers.getCities);
 router.post("/add-category", upload.single("image"), MainControllers.addCategory);
 router.get("/get-all-category", MainControllers.getAllCategory);
 // subcategory need to add the get sub caegory
-router.post("/add-sub-category", upload.single("image"), MainControllers.addSubCategory);
+router.post("/add-sub-category", upload.array("image"), MainControllers.addSubCategory);
 router.delete("/delete-sub-category/:categoryId/:subCategoryId", MainControllers.deleteSubCategory);
-router.post("/edit-sub-category", upload.single("image"), MainControllers.editSubCategory);
+router.put("/edit-sub-category", upload.single("image"), MainControllers.editSubCategory);
 
 
 export default router;

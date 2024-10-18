@@ -151,13 +151,13 @@ export const getAllStates = async (): Promise<ResponseDto> => {
 
     let response: ResponseDto;
     try {
-        
-        const FindAllCountriesWithStates:any = await CountryModel.findAll({
+
+        const FindAllCountriesWithStates: any = await CountryModel.findAll({
             include: [
                 {
                     model: StateModel,
-                    as: "states", 
-                    attributes: ["state_name", "short_name", "gst"], 
+                    as: "states",
+                    attributes: ["state_name", "short_name", "gst"],
                 },
             ],
             attributes: ["country_id", "name", "flag", "created_at", "updated_at"], // Include country attributes
@@ -265,7 +265,7 @@ export const addCity = async (data: any): Promise<ResponseDto> => {
 export const getAllCities = async (): Promise<ResponseDto> => {
     let response: ResponseDto;
     try {
-        
+
         const FindAllCountriesWithStatesAndCities: any = await CountryModel.findAll({
             include: [
                 {
@@ -275,13 +275,13 @@ export const getAllCities = async (): Promise<ResponseDto> => {
                     include: [
                         {
                             model: CityModel,
-                            as: "cities1", 
-                            attributes: ["city_name"], 
+                            as: "cities1",
+                            attributes: ["city_name"],
                         },
                     ],
                 },
             ],
-            attributes: ["country_id", "name", "flag", "created_at", "updated_at"], 
+            attributes: ["country_id", "name", "flag", "created_at", "updated_at"],
         });
 
         console.log(FindAllCountriesWithStatesAndCities, "FindAllCountriesWithStatesAndCities");
@@ -293,22 +293,22 @@ export const getAllCities = async (): Promise<ResponseDto> => {
             });
         }
 
-        const transformedData = FindAllCountriesWithStatesAndCities.flatMap((country: { 
-            states: { 
-                state_name: any; 
-                short_name: any; 
-                gst: any; 
+        const transformedData = FindAllCountriesWithStatesAndCities.flatMap((country: {
+            states: {
+                state_name: any;
+                short_name: any;
+                gst: any;
                 cities1: { city_name: any }[]; // Include cities association
-            }[]; 
-            country_id: any; 
-            name: any; 
-            flag: any; 
+            }[];
+            country_id: any;
+            name: any;
+            flag: any;
         }) => {
-            return country.states.flatMap((state: { 
-                state_name: any; 
-                short_name: any; 
-                gst: any; 
-                cities1: { city_name: any }[]; 
+            return country.states.flatMap((state: {
+                state_name: any;
+                short_name: any;
+                gst: any;
+                cities1: { city_name: any }[];
             }) => {
                 return state.cities1.map((city: { city_name: any }) => ({
                     country_id: country.country_id,
@@ -410,10 +410,12 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
         }
 
         console.log("before_upload");
+        console.log("beforeUploading", file.path);
         const uploadResponse = await cloudinary.uploader.upload(file.path, {
             folder: "upload",
             allowed_formats: ["jpg", "jpeg", "png"]
         });
+        console.log(file.path, "filepath");
         console.log("another");
         console.log(uploadResponse, "uploadResponse");
 
@@ -488,44 +490,67 @@ export const getAllCategory = async (): Promise<ResponseDto> => {
     }
 };
 
-export const addSubCategory = async (subCategoryDetails: ISubcategoryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
+export const addSubCategories = async (
+    subCategoryDetailsArray: { category_id: number, sub_category_name: any, icon: any }[]
+): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
+
     try {
 
-        const { category_id, sub_category_name } = subCategoryDetails;
-        const existingCategory = await CategoryModel.findOne({
-            where: { category_id },
-            transaction,
-        });
+        for (const subCategoryDetails of subCategoryDetailsArray) {
+            const { category_id, sub_category_name, icon } = subCategoryDetails;
 
-        if (!existingCategory) {
 
-            await transaction.rollback();
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("CATEGORY_NOT_FOUND"),
+            const existingCategory = await CategoryModel.findOne({
+                where: { category_id },
+                transaction,
             });
-        }
-        const uploadResponse = await cloudinary.uploader.upload(file.path, {
-            folder: "upload",
-            allowed_formats: ["jpg", "jpeg", "png"]
-        });
 
-        const subcategoriesCreation = await SubcategoryModel.create(
-            {
-                category_id, sub_category_name, icon: uploadResponse.secure_url,
-            },
-            { transaction }
-        );
+            if (!existingCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("CATEGORY_NOT_FOUND"),
+                });
+            }
 
-        if (!subcategoriesCreation) {
 
-            await transaction.rollback();
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("STATE_CREATION_FAILED"),
+            const existingSubCategory = await SubcategoryModel.findOne({
+                where: {
+                    category_id,
+                    sub_category_name,
+                },
+                transaction,
             });
+
+            if (existingSubCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("SUBCATEGORY_ALREADY_EXISTS"),
+                });
+            }
+
+
+            let uploadedIconUrl = null;
+            if (icon) {
+                const uploadResponse = await cloudinary.uploader.upload(icon, {
+                    folder: "upload",
+                    allowed_formats: ["jpg", "jpeg", "png"],
+                });
+                uploadedIconUrl = uploadResponse.secure_url;
+            }
+
+
+            await SubcategoryModel.create(
+                {
+                    category_id,
+                    sub_category_name,
+                    icon: uploadedIconUrl || "",
+                },
+                { transaction }
+            );
         }
 
 
@@ -534,8 +559,8 @@ export const addSubCategory = async (subCategoryDetails: ISubcategoryCreation, f
 
         return setSuccessResponse({
             statusCode: 200,
-            message: getResponseMessage("SUBCATEGORY_CREATED_SUCCESSFULLY"),
-            data: subcategoriesCreation,
+            message: getResponseMessage("SUBCATEGORIES_CREATED_SUCCESSFULLY"),
+            data: subCategoryDetailsArray,
         });
     } catch (error) {
 
@@ -549,6 +574,7 @@ export const addSubCategory = async (subCategoryDetails: ISubcategoryCreation, f
         return result;
     }
 };
+
 
 
 export const deleteSubCategory = async (categoryId: number, subCategoryId: number): Promise<ResponseDto> => {
@@ -740,6 +766,94 @@ export const getCities = async (): Promise<ResponseDto> => {
             error,
             details: error,
         });
+    }
+};
+
+
+export const editSubCategory = async (
+    subCategoryDetails: ISubcategoryCreation,
+    file?: Express.Multer.File
+): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+
+    try {
+        const { category_id, subcategory_id, sub_category_name } = subCategoryDetails;
+
+
+        const existingCategory = await CategoryModel.findOne({
+            where: { category_id },
+            transaction,
+        });
+
+        if (!existingCategory) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("CATEGORY_NOT_FOUND"),
+            });
+        }
+
+
+        const existingSubcategory = await SubcategoryModel.findOne({
+            where: {
+                [Op.and]: [
+                    { subcategory_id },
+                    { category_id }
+                ]
+            },
+            transaction,
+        });
+
+        if (!existingSubcategory) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("SUBCATEGORY_NOT_FOUND"),
+            });
+        }
+
+
+        const updateData: any = {
+            sub_category_name,
+        };
+
+
+        if (file) {
+            const uploadResponse = await cloudinary.uploader.upload(file.path, {
+                folder: "upload",
+                allowed_formats: ["jpg", "jpeg", "png"],
+            });
+            updateData.icon = uploadResponse.secure_url;
+        }
+
+
+        await SubcategoryModel.update(updateData, {
+            where: {
+                [Op.and]: [
+                    { subcategory_id },
+                    { category_id }
+                ]
+            },
+            transaction,
+        });
+
+        await transaction.commit();
+
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORY_UPDATED_SUCCESSFULLY"),
+            data: { ...existingSubcategory.toJSON(), ...updateData },
+        });
+    } catch (error) {
+        await transaction.rollback();
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
     }
 };
 
