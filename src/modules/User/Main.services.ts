@@ -9,7 +9,6 @@ import { CityModel } from "../../models/city.model";
 import { Op } from "sequelize";
 import { v2 as cloudinary } from "cloudinary";
 import { CategoryModel } from "../../models/category.model";
-import slugify from "slugify";
 import { ISubcategoryCreation } from "@dtos/subcategory.dto";
 import { SubcategoryModel } from "../../models/subcategory.model";
 
@@ -389,10 +388,7 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
         const formattedName = name.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 
 
-        const slug = slugify(name, {
-            lower: true,
-            strict: true
-        });
+        const slug = generateSlug(name);
 
         const existingCategory = await CategoryModel.findOne({
             where: { name: formattedName },
@@ -864,7 +860,7 @@ export const getAllSubCategories = async (): Promise<ResponseDto> => {
                 {
                     model: CategoryModel,
                     as: "category",
-                    attributes: ["name"],
+                    attributes: ["name", "icon"],
                 }
             ],
         });
