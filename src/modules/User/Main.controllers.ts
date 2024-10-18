@@ -160,23 +160,23 @@ export const addCity = async (req: Request, res: Response): Promise<any> => {
 export const getAllCities = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
-        const cityDetails: ICityCreation = req.body;
-        const schema = Joi.object()
-            .options({})
-            .keys({
-                country_id: Joi.number().required().label("Country_id"),
-                state_id: Joi.number().required().label("state_id")
-            });
+        // const cityDetails: ICityCreation = req.body;
+        // const schema = Joi.object()
+        //     .options({})
+        //     .keys({
+        //         country_id: Joi.number().required().label("Country_id"),
+        //         state_id: Joi.number().required().label("state_id")
+        //     });
 
 
-        const validateResult: ResponseDto = await schemaValidation(cityDetails, schema);
-        if (!validateResult.status) {
-            response = sendResponse(validateResult);
-            return res.json(response);
-        }
+        // const validateResult: ResponseDto = await schemaValidation(cityDetails, schema);
+        // if (!validateResult.status) {
+        //     response = sendResponse(validateResult);
+        //     return res.json(response);
+        // }
 
 
-        response = await MainService.getAllCities(cityDetails);
+        response = await MainService.getAllCities();
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

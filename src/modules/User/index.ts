@@ -3,18 +3,23 @@ import * as MainControllers from "./Main.controllers";
 const router = Router();
 import multer from "multer";
 const upload = multer({ dest: "temp/" });
-// For Adding the country
+
+/*-------------------------------------------------------------
+|                API"S FOR Countries , States and Cities      |
+------------------------------------------------------------ */
+
+// Api For Adding the Country
 router.post("/add-country", upload.single("image"), MainControllers.addCountry);
-// for getting all countries
+// Api For  Getting All the Countries
 router.get("/get-all-countries", MainControllers.getAllCountries);
 // for adding the state
 router.post("/add-state", MainControllers.addState);
-// for getting all the states based up on the
+// for getting all the states while loading the page
 router.get("/all-states", MainControllers.getAllStates);
-router.get("/get-states", MainControllers.getStates);
+// router.get("/get-states", MainControllers.getStates);
 router.post("/create-city", MainControllers.addCity);
 // need to change
-router.post("/get-all-cities", MainControllers.getAllCities);
+router.get("/get-all-cities", MainControllers.getAllCities);
 // for getting all cities initially
 router.get("/get-cities", MainControllers.getCities);
 // for adding the category

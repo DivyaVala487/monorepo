@@ -172,7 +172,6 @@ export const getAllStates = async (): Promise<ResponseDto> => {
             });
         }
 
-        // Transform the result into the desired format
         const transformedData = FindAllCountriesWithStates.flatMap((country: { states: { state_name: any; short_name: any; gst: any; }[]; country_id: any; name: any; flag: any; }) => {
             return country.states.map((state: { state_name: any; short_name: any; gst: any; }) => ({
                 country_id: country.country_id,
@@ -263,68 +262,71 @@ export const addCity = async (data: any): Promise<ResponseDto> => {
 };
 
 
-export const getAllCities = async (data: any): Promise<ResponseDto> => {
-    const { country_id, state_id } = data;
+export const getAllCities = async (): Promise<ResponseDto> => {
     let response: ResponseDto;
-
     try {
-
-        const countryExists = await CountryModel.findOne({
-            where: { country_id },
-        });
-
-        if (!countryExists) {
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("COUNTRY_NOT_PRESENT"),
-            });
-        }
-
-
-        const stateExists = await StateModel.findOne({
-            where: { state_id, country_id },
-        });
-
-        if (!stateExists) {
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("STATE_NOT_FOUND_OR_INVALID_FOR_COUNTRY"),
-            });
-        }
-
-
-        const allCities = await CityModel.findAll({
-            where: {
-                [Op.and]: [{ country_id: country_id }, { state_id: state_id }],
-            },
+        
+        const FindAllCountriesWithStatesAndCities: any = await CountryModel.findAll({
             include: [
                 {
-                    model: CountryModel,
-                    as: "country",
-                    attributes: ["name"],
-                },
-                {
                     model: StateModel,
-                    as: "state",
-                    attributes: ["state_name"],
+                    as: "states",
+                    attributes: ["state_name", "short_name", "gst"],
+                    include: [
+                        {
+                            model: CityModel,
+                            as: "cities1", 
+                            attributes: ["city_name"], 
+                        },
+                    ],
                 },
             ],
+            attributes: ["country_id", "name", "flag", "created_at", "updated_at"], 
         });
 
-        // Check if cities are present
-        if (!allCities || allCities.length === 0) {
+        console.log(FindAllCountriesWithStatesAndCities, "FindAllCountriesWithStatesAndCities");
+
+        if (FindAllCountriesWithStatesAndCities.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
-                message: getResponseMessage("NO_CITIES_PRESENT"),
+                message: getResponseMessage("NO_COUNTRY_WITH_STATES_AND_CITIES_PRESENT"),
             });
         }
+
+        const transformedData = FindAllCountriesWithStatesAndCities.flatMap((country: { 
+            states: { 
+                state_name: any; 
+                short_name: any; 
+                gst: any; 
+                cities1: { city_name: any }[]; // Include cities association
+            }[]; 
+            country_id: any; 
+            name: any; 
+            flag: any; 
+        }) => {
+            return country.states.flatMap((state: { 
+                state_name: any; 
+                short_name: any; 
+                gst: any; 
+                cities1: { city_name: any }[]; 
+            }) => {
+                return state.cities1.map((city: { city_name: any }) => ({
+                    country_id: country.country_id,
+                    country_name: country.name,
+                    country_flag: country.flag,
+                    state_name: state.state_name,
+                    state_short_name: state.short_name,
+                    state_gst: state.gst,
+                    city_name: city.city_name,
+                }));
+            });
+        });
 
         return setSuccessResponse({
             statusCode: 200,
-            message: getResponseMessage("CITIES_FOUND"),
-            data: allCities,
+            message: getResponseMessage("COUNTRIES_STATES_AND_CITIES_ARE_PRESENT"),
+            data: transformedData,
         });
-
     } catch (error) {
         const result: ResponseDto = setErrorResponse({
             statusCode: 500,
@@ -335,6 +337,10 @@ export const getAllCities = async (data: any): Promise<ResponseDto> => {
         return result;
     }
 };
+
+
+
+
 
 export const getAllCountries = async (): Promise<ResponseDto> => {
 

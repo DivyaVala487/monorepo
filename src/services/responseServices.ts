@@ -101,7 +101,10 @@ export const getResponseMessage = (message: string) => {
     SUBCATEGORY_CREATED_SUCCESSFULLY: "Sub Category Created Successfully",
     SUBCATEGORY_NOT_FOUND: "Sub category Not Found",
     SUBCATEGORY_DELETION_FAILED: "Subcategory Deletion Failed",
-    SUBCATEGORY_DELETED_SUCCESSFULLY: "Subcategory Deleted Successfully"
+    SUBCATEGORY_DELETED_SUCCESSFULLY: "Subcategory Deleted Successfully",
+    NO_COUNTRY_WITH_STATES_AND_CITIES_PRESENT:"No Country With States and Cities Present",
+    COUNTRIES_STATES_AND_CITIES_ARE_PRESENT:"Countries States and Cities  Are Present",
+
 
   };
 
