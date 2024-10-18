@@ -856,6 +856,41 @@ export const editSubCategory = async (
         return result;
     }
 };
+export const getAllSubCategories = async (): Promise<ResponseDto> => {
+    let response: ResponseDto;
+    try {
+        const getAllSubCategories = await SubcategoryModel.findAll({
+            include: [
+                {
+                    model: CategoryModel,
+                    as: "category",
+                    attributes: ["name"],
+                }
+            ],
+        });
+        if (getAllSubCategories.length === 0) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("SUBCATEGORIES_NOT_FOUND"),
+            });
+        }
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORIES_FOUND"),
+            data: getAllSubCategories,
+        });
+    } catch (error) {
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+
 
 
 

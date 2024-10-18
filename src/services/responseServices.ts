@@ -106,7 +106,9 @@ export const getResponseMessage = (message: string) => {
     COUNTRIES_STATES_AND_CITIES_ARE_PRESENT: "Countries States and Cities  Are Present",
     SUBCATEGORY_UPDATED_SUCCESSFULLY: "Subcategory Updated Successfully",
     FILES_MISMATCH: "Files Mismatch",
-    SUBCATEGORY_ALREADY_EXISTS: "Suncategory Already Exists"
+    SUBCATEGORY_ALREADY_EXISTS: "Suncategory Already Exists",
+    SUBCATEGORIES_NOT_FOUND: "Subcategories Not Found",
+    SUBCATEGORIES_FOUND: "Subcategories Found"
   };
 
   return messageConstant[message] || null;

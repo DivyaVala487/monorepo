@@ -420,3 +420,24 @@ export const getCities = async (req: Request, res: Response): Promise<any> => {
         return res.json(result);
     }
 };
+
+export const getAllSubCategories = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+
+
+
+        response = await MainService.getAllSubCategories();
+        response = sendResponse(response);
+        return res.json(response);
+    } catch (error) {
+        let result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        result = sendResponse(result);
+        return res.json(result);
+    }
+};
