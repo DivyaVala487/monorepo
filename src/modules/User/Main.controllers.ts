@@ -298,10 +298,10 @@ export const addSubCategory = async (req: Request, res: Response): Promise<any> 
             return res.json(response);
         }
 
-        // Normalize the files
+
         const normalizedFiles = Array.isArray(files) ? files : (files ? [files] : []);
 
-        // Ensure file and subcategory count match
+
         if (normalizedFiles.length !== subcategories.length) {
             return res.json(setErrorResponse({
                 statusCode: 400,
@@ -309,19 +309,19 @@ export const addSubCategory = async (req: Request, res: Response): Promise<any> 
             }));
         }
 
-        // Prepare the subCategoryDetailsArray
+
         const subCategoryDetailsArray = subcategories.map((subCategory, index: number) => ({
             sub_category_name: subCategory,
             icon: normalizedFiles[index],
             category_id: categoryDetails.category_id
         }));
 
-        // Call the service
+
         const serviceResponse = await MainService.addSubCategories(subCategoryDetailsArray);
         return res.json(sendResponse(serviceResponse));
 
     } catch (error) {
-        // Error handling
+
         const result: ResponseDto = setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
@@ -415,9 +415,6 @@ export const getStates = async (req: Request, res: Response): Promise<any> => {
 export const getCities = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
-
-
-
         response = await MainService.getCities();
         response = sendResponse(response);
         return res.json(response);

@@ -174,10 +174,10 @@ export const getAllStates = async (): Promise<ResponseDto> => {
                     attributes: ["state_name", "short_name", "gst", "state_id"],
                 },
             ],
-            attributes: ["country_id", "name", "flag", "created_at", "updated_at"], // Include country attributes
+            attributes: ["country_id", "name", "flag", "created_at", "updated_at"],
         });
 
-        console.log(FindAllCountriesWithStates, "FindAllCountriesWithStates");
+
 
         if (FindAllCountriesWithStates.length === 0) {
             return setErrorResponse({
@@ -245,11 +245,23 @@ export const addCity = async (data: any): Promise<ResponseDto> => {
             });
         }
 
+        const formattedName = city_name.trim().toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase());
+        const FindCity = await CityModel.findOne({
+            where: {
+                city_name: formattedName
+            }
+        });
 
+        if (FindCity) {
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("CITY_ALREADY_PRESENT"),
+            });
+        }
         const createCity = await CityModel.create({
             country_id,
             state_id,
-            city_name,
+            city_name: formattedName,
         });
 
         if (!createCity) {
@@ -299,7 +311,7 @@ export const getAllCities = async (): Promise<ResponseDto> => {
             attributes: ["country_id", "name", "flag", "created_at", "updated_at"],
         });
 
-        console.log(FindAllCountriesWithStatesAndCities, "FindAllCountriesWithStatesAndCities");
+
 
         if (FindAllCountriesWithStatesAndCities.length === 0) {
             return setErrorResponse({
@@ -313,7 +325,7 @@ export const getAllCities = async (): Promise<ResponseDto> => {
                 state_name: any;
                 short_name: any;
                 gst: any;
-                cities1: { city_name: any }[]; // Include cities association
+                cities1: { city_name: any }[];
             }[];
             country_id: any;
             name: any;
@@ -396,23 +408,13 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
     try {
-
         const { name } = categoryDetails;
-        console.log(name, "names");
-
-
         const formattedName = name.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-
-
         const slug = generateSlug(name);
-
         const existingCategory = await CategoryModel.findOne({
             where: { name: formattedName },
             transaction,
         });
-
-        console.log(existingCategory, "existingCategory");
-
         if (existingCategory) {
             await transaction.rollback();
             return setErrorResponse({
@@ -420,17 +422,10 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
                 message: getResponseMessage("CATEGORY_ALREADY_EXISTS"),
             });
         }
-
-        console.log("before_upload");
-        console.log("beforeUploading", file.path);
         const uploadResponse = await cloudinary.uploader.upload(file.path, {
             folder: "upload",
             allowed_formats: ["jpg", "jpeg", "png"]
         });
-        console.log(file.path, "filepath");
-        console.log("another");
-        console.log(uploadResponse, "uploadResponse");
-
         const newCategory = await CategoryModel.create(
             {
                 name: formattedName,
@@ -439,8 +434,6 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
             },
             { transaction }
         );
-
-        console.log(newCategory, "newCategory");
         if (!newCategory) {
             await transaction.rollback();
             return setErrorResponse({
@@ -448,15 +441,12 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
                 message: getResponseMessage("FAILED_TO_CREATE_CATEGORY"),
             });
         }
-
         await transaction.commit();
-
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("CATEGORY_CREATED_SUCCESSFULLY"),
             data: newCategory,
         });
-
     } catch (error) {
         await transaction.rollback();
         const result: ResponseDto = setErrorResponse({
@@ -471,7 +461,6 @@ export const addCategory = async (categoryDetails: ICountryCreation, file: Expre
 
 
 export const getAllCategory = async (): Promise<ResponseDto> => {
-
     let response: ResponseDto;
     try {
         const getAllCategory = await CategoryModel.findAll({
@@ -568,11 +557,7 @@ export const addSubCategories = async (
                 icon: uploadedIconUrl || "",
             });
         }
-
-
         await transaction.commit();
-
-
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("SUBCATEGORIES_CREATED_SUCCESSFULLY"),
@@ -735,26 +720,26 @@ export const getStates = async (): Promise<ResponseDto> => {
 export const getCities = async (): Promise<ResponseDto> => {
     let response: ResponseDto;
     try {
-        // Fetch all countries with associated states and cities
+
         const FindAllCountries = await CountryModel.findAll({
             include: [
                 {
                     model: StateModel,
-                    as: "states", // Ensure alias is "states"
+                    as: "states",
                     attributes: ["state_name", "state_id"],
                     include: [
                         {
                             model: CityModel,
-                            as: "cities1", // Ensure alias is "cities"
+                            as: "cities1",
                             attributes: ["city_name"],
                         },
                     ],
                 },
             ],
-            attributes: ["name"], // Get country name
+            attributes: ["name"],
         });
 
-        // Check if any countries are found
+
         if (!FindAllCountries || FindAllCountries.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
@@ -762,23 +747,22 @@ export const getCities = async (): Promise<ResponseDto> => {
             });
         }
 
-        // Prepare the final result format
+
         const result = FindAllCountries.map((country: any) => ({
-            country: country?.name || "", // Country name
+            country: country?.name || "",
             states: country?.states?.map((state: any) => ({
-                state_name: state?.state_name || "", // State name
-                cities: state?.cities?.map((city: any) => city?.city_name) || [] // List of cities
-            })) || [] // Ensure empty array if no states found
+                state_name: state?.state_name || "",
+                cities: state?.cities?.map((city: any) => city?.city_name) || []
+            })) || []
         }));
 
-        // Return success response with the formatted data
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("COUNTRIES_ARE_PRESENT"),
             data: result,
         });
     } catch (error) {
-        // Return error response in case of an exception
+
         return setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
@@ -836,8 +820,6 @@ export const editSubCategory = async (
         const updateData: any = {
             sub_category_name,
         };
-
-
         if (file) {
             const uploadResponse = await cloudinary.uploader.upload(file.path, {
                 folder: "upload",
