@@ -171,7 +171,7 @@ export const getAllStates = async (): Promise<ResponseDto> => {
                 {
                     model: StateModel,
                     as: "states",
-                    attributes: ["state_name", "short_name", "gst"],
+                    attributes: ["state_name", "short_name", "gst", "state_id"],
                 },
             ],
             attributes: ["country_id", "name", "flag", "created_at", "updated_at"], // Include country attributes
