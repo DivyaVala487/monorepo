@@ -109,7 +109,8 @@ export const getResponseMessage = (message: string) => {
     SUBCATEGORY_ALREADY_EXISTS: "Subcategory Already Exists",
     SUBCATEGORIES_NOT_FOUND: "Subcategories Not Found",
     SUBCATEGORIES_FOUND: "Subcategories Found",
-    SUBCATEGORIES_CREATED_SUCCESSFULLY:"Subcategories_Created_Successfully"
+    SUBCATEGORIES_CREATED_SUCCESSFULLY: "Subcategories Created Successfully",
+    STATE_ALREADY_PRESENT: "State Already Present"
   };
 
   return messageConstant[message] || null;

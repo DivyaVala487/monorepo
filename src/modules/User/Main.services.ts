@@ -104,7 +104,21 @@ export const addState = async (stateDetails: IStateCreation): Promise<ResponseDt
             });
         }
 
+        const formattedName = state_name.trim().toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 
+        const FindState = await StateModel.findOne({
+            where: {
+                state_name: formattedName
+            }
+        });
+
+        if (FindState) {
+            await transaction.rollback();
+            return setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("STATE_ALREADY_PRESENT"),
+            });
+        }
         const stateCreation = await StateModel.create(
             {
                 country_id,
@@ -509,6 +523,7 @@ export const addSubCategories = async (
                 });
             }
 
+
             const existingSubCategory = await SubcategoryModel.findOne({
                 where: {
                     category_id,
@@ -524,6 +539,7 @@ export const addSubCategories = async (
                     message: getResponseMessage("SUBCATEGORY_ALREADY_EXISTS"),
                 });
             }
+
 
             let uploadedIconUrl = null;
             if (icon && icon.path) {

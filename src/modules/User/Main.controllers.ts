@@ -72,7 +72,7 @@ export const addState = async (req: Request, res: Response): Promise<any> => {
                 country_id: Joi.number().required().label("country_id"),
                 state_name: Joi.string().required().label("state_name"),
                 short_name: Joi.string().required().label("short_name"),
-                gst: Joi.boolean().required().label("gst")
+                gst: Joi.boolean().optional().label("gst")
             });
 
 
