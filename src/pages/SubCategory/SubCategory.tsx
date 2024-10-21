@@ -24,7 +24,7 @@ const SubCategory = () => {
     { label: string; value: number }[]
   >([]);
   const [alert, showAlert] = useState<any>(false);
-  const[message,setMessage]=useState("")
+  const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
   const [categoryValue, setCategoryValue] = useState("");
   const [categoryId, setCategoryId] = useState(0);
   const [rows, setRows] = useState<any[]>([]);
@@ -33,7 +33,8 @@ const SubCategory = () => {
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
-const[filterRows,setFilterRows]=useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filterRows, setFilterRows] = useState([]);
   const [data, setData] = useState([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleFirstRowChange = (value: string, field: string) => {
@@ -183,14 +184,12 @@ const[filterRows,setFilterRows]=useState([]);
   console.log(rows, "rows");
   const handleDelete = (row: any) => {
     setOpenDeleteModal(true);
-    setFilterRows(row)
- 
+    setFilterRows(row);
   };
 
   const handleEdit = (row: any) => {
     setEditOpenModal(true);
     setFilterRows(row);
-
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,6 +204,7 @@ const[filterRows,setFilterRows]=useState([]);
     setErrors({ dynamicRows: updatedErrors });
 
     if (allRowsValid) {
+      setLoading(true);
       const formData: any = new FormData();
 
       rows.forEach((row, index) => {
@@ -213,24 +213,30 @@ const[filterRows,setFilterRows]=useState([]);
           formData.append(`image`, row.icon);
         }
       });
-      console.log(rows,"rows")
       formData.append("category_id", categoryId);
       try {
         const response = await Post(networkUrls.addSubCategory, formData, true);
         if (response?.data?.api_status === 200) {
           showAlert(true);
-          setSubmissionSuccess(true);
-          setMessage(response?.data?.message)
-          setCategoryValue("")
+          console.log(response, "response");
+          setAlertInfo({
+            message: response?.data?.message,
+            isSuccess: true,
+          });
+          setLoading(false);
+          setCategoryValue("");
           getSubCategories();
         } else {
+          setLoading(false);
           showAlert(true);
-          setMessage(response?.data?.message)
-          setSubmissionSuccess(false);
+          setAlertInfo({
+            message: response?.data?.message,
+            isSuccess: false,
+          });
         }
-        console.log(response, "response");
       } catch (error) {
         console.log("Error adding sub-category", error);
+        setLoading(false)
       }
     } else {
       console.log("Validation Failed");
@@ -241,37 +247,34 @@ const[filterRows,setFilterRows]=useState([]);
     try {
       const response = await Get(networkUrls.getSubCategories, false);
       if (response?.data?.api_status === 200) {
-        console.log(response?.data?.data,"data");
-        const subCategoryData = response?.data?.data.map((subcategory: any, index: any) => ({
-          id: index + 1,
-          category: subcategory.category.name,
-          categoryIcon: subcategory.category.icon,
-          subCategory: subcategory.sub_category_name,
-          subCategoryIcon: subcategory.icon,
-          subcategoryId:subcategory.subcategory_id,
-          categoryId:subcategory.category_id
-        }));
-        setData(subCategoryData)
+        console.log(response?.data?.data, "data");
+        const subCategoryData = response?.data?.data.map(
+          (subcategory: any, index: any) => ({
+            id: index + 1,
+            category: subcategory.category.name,
+            categoryIcon: subcategory.category.icon,
+            subCategory: subcategory.sub_category_name,
+            subCategoryIcon: subcategory.icon,
+            subcategoryId: subcategory.subcategory_id,
+            categoryId: subcategory.category_id,
+          })
+        );
+        setData(subCategoryData);
       }
     } catch (error) {
       console.log("Error getting sub-categories", error);
     }
   };
 
- 
   return (
     <>
       <form onSubmit={handleSubmit}>
         {alert && (
           <Alerts
-            message={
-              submissionSuccess
-                ? message
-                : message
-            }
-            backgroundColor={submissionSuccess ? "green" : "red"}
+            message={alertInfo.isSuccess ? alertInfo.message : alertInfo.message}
+            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
             icon={
-              submissionSuccess ? (
+              alertInfo.isSuccess ? (
                 <CheckCircle style={{ color: "white", fontSize: "24px" }} />
               ) : (
                 <Cancel style={{ color: "white", fontSize: "24px" }} />
@@ -302,9 +305,10 @@ const[filterRows,setFilterRows]=useState([]);
           <Grid xs={12} md={3}>
             <Dropdown
               options={categories}
-              onChange={(value) => handleCategoryChange(value)}
+              onChange={handleCategoryChange}
               placeholder="Select your category"
               width={333}
+              value={categoryValue}
               id="category"
               label="Category"
             />
@@ -429,6 +433,7 @@ const[filterRows,setFilterRows]=useState([]);
                 <ReuseableButton
                   variant="solid"
                   title="Submit"
+                  loading={loading}
                   type="submit"
                   styles={{ backgroundColor: "#735DA5" }}
                 />
@@ -442,7 +447,13 @@ const[filterRows,setFilterRows]=useState([]);
             setOpen={setEditOpenModal}
             heading="Edit Category"
             type="edit"
-            component={<EditSubCategory data={filterRows} setSubmissionSuccess={setSubmissionSuccess} setEditOpenModal={setEditOpenModal}/>}
+            component={
+              <EditSubCategory
+                data={filterRows}
+                setAlertInfo={setAlertInfo}
+                setEditOpenModal={setEditOpenModal}
+              />
+            }
             size="lg"
           />
         )}
@@ -451,11 +462,19 @@ const[filterRows,setFilterRows]=useState([]);
             open={deleteOpenModal}
             setOpen={setOpenDeleteModal}
             type="delete"
-            component={<DeleteSubCategory data={filterRows} setOpenDeleteModal={setOpenDeleteModal} showAlert={showAlert} getSubCategories={getSubCategories} setMessage={setMessage} setSubmissionSuccess={setSubmissionSuccess}/>}
+            component={
+              <DeleteSubCategory
+                data={filterRows}
+                setOpenDeleteModal={setOpenDeleteModal}
+                showAlert={showAlert}
+                getSubCategories={getSubCategories}
+                setAlertInfo={setAlertInfo}
+              />
+            }
             heading="Are you sure want to delete?"
             buttonText="Delete"
             size="lg"
-            style={{width:500}}
+            style={{ width: 500 }}
           />
         )}
       </form>

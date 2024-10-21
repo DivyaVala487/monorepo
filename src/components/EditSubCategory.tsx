@@ -5,7 +5,7 @@ import ReuseableButton from "./ResusableButton";
 import validateForm from "../utils/validations";
 import { Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
-const EditSubCategory = ({data,setSubmissionSuccess,setEditOpenModal}:any) => {
+const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
   const [subCategoryData, setSubCategoryData] = useState({ subCategory: "", icon: "" });
   const [errors, setErrors] = useState<any>({});
   const handleChange = (value: string, field: string) => {
@@ -67,10 +67,16 @@ const EditSubCategory = ({data,setSubmissionSuccess,setEditOpenModal}:any) => {
           true
         );
         if(response?.data?.api_status === 200){
-          setSubmissionSuccess(true)
+          setAlertInfo({
+            message:response?.data?.message,
+            isSuccess:true
+          })
           setEditOpenModal(false)
         }else{
-          setSubmissionSuccess(false)
+          setAlertInfo({
+            message:response?.data?.message,
+            isSuccess:true
+          })
           setEditOpenModal(false);
         }
       } catch (error) {

@@ -8,8 +8,7 @@ const DeleteSubCategory = ({
   setOpenDeleteModal,
   showAlert,
   getSubCategories,
-  setMessage,
-  setSubmissionSuccess,
+  setAlertInfo,
 }: any) => {
   const { subcategoryId, categoryId } = data;
 
@@ -21,14 +20,19 @@ const DeleteSubCategory = ({
       );
       if (response?.data?.api_status === 200) {
         setOpenDeleteModal(false);
-        setMessage(response?.data?.message);
+
         getSubCategories();
         showAlert(true);
-        setSubmissionSuccess(true);
+        setAlertInfo({
+          message: response?.data?.message,
+          isSuccess: true,
+        });
       } else {
-        setMessage(response?.data?.message);
         setOpenDeleteModal(false);
-        setSubmissionSuccess(false);
+        setAlertInfo({
+          message: response?.data?.message,
+          isSuccess: true,
+        });
       }
     } catch (error) {
       console.log("Error while deleting sub category", error);
