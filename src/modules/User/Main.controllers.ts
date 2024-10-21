@@ -232,7 +232,7 @@ export const addCategory = async (req: Request, res: Response): Promise<any> => 
                 message: getResponseMessage("IMAGE_IS_REQUIRED"),
             }));
         }
-        // console.log(req.file , "request");
+
 
 
         response = await MainService.addCategory(categoryDetails, req.file);
@@ -272,10 +272,13 @@ export const getAllCategory = async (req: Request, res: Response): Promise<any> 
 export const addSubCategory = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
+        const subcategories: string[] = Array.isArray(req.body.subcategories)
+            ? req.body.subcategories
+            : [req.body.subcategories];
 
-        const subcategories: string[] = req.body.subcategories;
-        const files: Express.Multer.File[] = req.files as Express.Multer.File[];
-
+        const files: Express.Multer.File[] = Array.isArray(req.files)
+            ? (req.files as Express.Multer.File[])
+            : req.files ? [req.files as unknown as Express.Multer.File] : [];
 
         const categoryDetails: any = req.body;
 
@@ -285,35 +288,40 @@ export const addSubCategory = async (req: Request, res: Response): Promise<any> 
             subcategories: Joi.array().items(Joi.string()).required().label("Subcategories")
         });
 
+
+        categoryDetails.subcategories = subcategories;
+
+
         const validateResult: ResponseDto = await schemaValidation(categoryDetails, schema);
-        console.log(validateResult, "validateResult");
         if (!validateResult.status) {
             response = sendResponse(validateResult);
             return res.json(response);
         }
 
+        // Normalize the files
+        const normalizedFiles = Array.isArray(files) ? files : (files ? [files] : []);
 
-        if (files.length !== subcategories.length) {
+        // Ensure file and subcategory count match
+        if (normalizedFiles.length !== subcategories.length) {
             return res.json(setErrorResponse({
                 statusCode: 400,
                 message: getResponseMessage("FILES_MISMATCH"),
             }));
         }
 
-
-        const subCategoryDetailsArray: any = subcategories.map((subCategory, index) => ({
+        // Prepare the subCategoryDetailsArray
+        const subCategoryDetailsArray = subcategories.map((subCategory, index: number) => ({
             sub_category_name: subCategory,
-            icon: files[index].path,
+            icon: normalizedFiles[index],
             category_id: categoryDetails.category_id
         }));
 
-
-
-
+        // Call the service
         const serviceResponse = await MainService.addSubCategories(subCategoryDetailsArray);
         return res.json(sendResponse(serviceResponse));
 
     } catch (error) {
+        // Error handling
         const result: ResponseDto = setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
@@ -323,6 +331,10 @@ export const addSubCategory = async (req: Request, res: Response): Promise<any> 
         return res.json(sendResponse(result));
     }
 };
+
+
+
+
 export const deleteSubCategory = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
@@ -424,9 +436,6 @@ export const getCities = async (req: Request, res: Response): Promise<any> => {
 export const getAllSubCategories = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
-
-
-
         response = await MainService.getAllSubCategories();
         response = sendResponse(response);
         return res.json(response);

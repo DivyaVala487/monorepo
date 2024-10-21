@@ -11,6 +11,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { CategoryModel } from "../../models/category.model";
 import { ISubcategoryCreation } from "@dtos/subcategory.dto";
 import { SubcategoryModel } from "../../models/subcategory.model";
+import { generateSlug } from "../../reusablefunctions/reusablefunctions";
 
 export const addCountry = async (countryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
@@ -493,11 +494,8 @@ export const addSubCategories = async (
     let response: ResponseDto;
 
     try {
-
         for (const subCategoryDetails of subCategoryDetailsArray) {
             const { category_id, sub_category_name, icon } = subCategoryDetails;
-
-
             const existingCategory = await CategoryModel.findOne({
                 where: { category_id },
                 transaction,
@@ -531,12 +529,15 @@ export const addSubCategories = async (
 
             let uploadedIconUrl = null;
             if (icon) {
-                const uploadResponse = await cloudinary.uploader.upload(icon, {
+                const uploadResponse = await cloudinary.uploader.upload(icon.path, {
                     folder: "upload",
                     allowed_formats: ["jpg", "jpeg", "png"],
                 });
                 uploadedIconUrl = uploadResponse.secure_url;
+                console.log(uploadResponse.secure_url, "Secure url");
             }
+
+
 
 
             await SubcategoryModel.create(
@@ -551,7 +552,6 @@ export const addSubCategories = async (
 
 
         await transaction.commit();
-
 
         return setSuccessResponse({
             statusCode: 200,
@@ -570,6 +570,7 @@ export const addSubCategories = async (
         return result;
     }
 };
+
 
 
 
