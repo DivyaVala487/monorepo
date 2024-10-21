@@ -187,13 +187,14 @@ export const getAllStates = async (): Promise<ResponseDto> => {
         }
 
         const transformedData = FindAllCountriesWithStates.flatMap((country: { states: { state_name: any; short_name: any; gst: any; }[]; country_id: any; name: any; flag: any; }) => {
-            return country.states.map((state: { state_name: any; short_name: any; gst: any; }) => ({
+            return country.states.map((state: { state_name: any; short_name: any; gst: any; state_id: number; }) => ({
                 country_id: country.country_id,
                 name: country.name,
                 flag: country.flag,
                 state_name: state.state_name,
                 short_name: state.short_name,
                 gst: state.gst,
+                state_id: state.state_id,
             }));
         });
 
@@ -907,8 +908,4 @@ export const getAllSubCategories = async (): Promise<ResponseDto> => {
         return result;
     }
 };
-
-
-
-
 
