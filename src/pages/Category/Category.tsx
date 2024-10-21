@@ -9,6 +9,7 @@ import { networkUrls } from "../../services/networkrls";
 import ReusableDataGrid from "../../components/ReusableDataGrid";
 import { GridColDef } from "@mui/x-data-grid";
 import Alerts from "../../components/ReusableAlerts";
+import { Cancel, CheckCircle } from "@mui/icons-material";
 const Category = () => {
   const [formValues, setFormValues] = useState<any>({
     category: "",
@@ -46,7 +47,7 @@ const Category = () => {
         console.log(formValues.categoryicon, "icon");
         formData.append("image", formValues.categoryicon);
 
-        const response = await Post(networkUrls.addCategory, formData, false);
+        const response = await Post(networkUrls.addCategory, formData, true);
         if (response?.data?.api_status === 200) {
           console.log("Success:", response);
           setFormValues({})
@@ -127,7 +128,13 @@ const Category = () => {
             backgroundColor={submissionSuccess ? "green" :"red"}
             textColor="light"
             duration={2000}
-            icon={submissionSuccess ? "✅" : "❌"}
+            icon={
+              submissionSuccess ? (
+                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+              ) : (
+                <Cancel style={{ color: "white", fontSize: "24px" }} />
+              )
+            }
             borderRadius="8px"
             boxShadow="0 4px 8px rgba(0,0,0,0.2)"
             position="top-right"
@@ -170,7 +177,7 @@ const Category = () => {
               label="Category Icon"
               name="categoryicon"
               size="sm"
-              style={{ width: "333px", height: "36px" }}
+              style={{ width: "333px", height: "36px",padding:"6px" }}
                 value={formValues.categoryiconicon}
               onChange={handleFileChange}
             />

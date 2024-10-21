@@ -11,7 +11,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
-
+import { CheckCircle, Cancel } from '@mui/icons-material';
 const Country: React.FC = () => {
   const [formValues, setFormValues] = useState<any>({
     country: "",
@@ -19,28 +19,34 @@ const Country: React.FC = () => {
   });
   const [errors, setErrors] = useState<any>({});
   const [alert, showAlert] = useState<any>(false);
+  const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<{ id: number; country: string }[]>([]);
-  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
+    null
+  );
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "country", headerName: "Country", flex: 1 },
-    { field: "countryicon", headerName: "Country icon", flex: 1,renderCell: (params) => (
-      <img
-        src={params.value} 
-        alt="Country Icon"
-        style={{ width: '45px', height: '45px', objectFit: 'cover'}} 
-      />
-    ), },
+    {
+      field: "countryicon",
+      headerName: "Country icon",
+      flex: 1,
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Country Icon"
+          style={{ width: "45px", height: "45px", objectFit: "cover" }}
+        />
+      ),
+    },
   ];
 
   const handleEdit = (row: any) => {
     console.log("Editing row:", row);
-    // Implement edit logic here
   };
 
   const handleDelete = async (id: number) => {
     console.log("Deleting row with ID:", id);
-    // Implement delete logic here
   };
 
   const fetchCountries = async () => {
@@ -52,7 +58,7 @@ const Country: React.FC = () => {
           (country: any, index: number) => ({
             id: index + 1,
             country: country.name,
-            countryicon:country.flag
+            countryicon: country.flag,
           })
         );
         setRows(fetchedCountries);
@@ -73,23 +79,28 @@ const Country: React.FC = () => {
     setErrors(validationErrors);
 
     if (!validationErrors.country) {
+      setLoading(true);
+
       const formData = new FormData();
-        formData.append("name", formValues.country);
-        formData.append("image", formValues.countryicon);
+      formData.append("name", formValues.country);
+      formData.append("image", formValues.countryicon);
       try {
-        const response = await Post(networkUrls.addCountry, formData, false);
+        const response = await Post(networkUrls.addCountry, formData, true);
         if (response?.data?.api_status === 200) {
           showAlert(true);
           setFormValues({ country: "" });
           fetchCountries();
-          setSubmissionSuccess(true)
+          setLoading(false);
+
+          setSubmissionSuccess(true);
         } else {
-          console.error("Error adding country:", response);
-          setSubmissionSuccess(false)
+          setSubmissionSuccess(false);
           showAlert(true);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error adding country:", error);
+        setLoading(false);
       }
     }
   };
@@ -120,13 +131,19 @@ const Country: React.FC = () => {
       <form onSubmit={handleSubmit}>
         {alert && (
           <Alerts
-          message={
-            submissionSuccess
-              ? "Country Added Successfully"
-              : "Country Submission Failed"
-          }
-            backgroundColor={submissionSuccess ? "green" :"red"}
-          icon={submissionSuccess ? "✅" : "❌"}
+            message={
+              submissionSuccess
+                ? "Country Added Successfully"
+                : "Country Submission Failed"
+            }
+            backgroundColor={submissionSuccess ? "green" : "red"}
+            icon={
+              submissionSuccess ? (
+                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+              ) : (
+                <Cancel style={{ color: "white", fontSize: "24px" }} />
+              )
+            }
             textColor="light"
             duration={2000}
             borderRadius="8px"
@@ -155,7 +172,7 @@ const Country: React.FC = () => {
               placeholder="Enter Country"
               size="sm"
               value={formValues.country}
-              style={{ width: "333px !important" }}
+              style={{ width: "333px !important", height: "36px" }}
               onChange={(e) => handleChange(e.target.value, "country")}
               label="Country"
             />
@@ -170,8 +187,8 @@ const Country: React.FC = () => {
               label="Country Icon"
               name="countryicon"
               size="sm"
-              style={{ width: "333px", height: "36px" }}
-                value={formValues.categoryicon}
+              style={{ width: "333px", height: "36px", padding: "6px" }}
+              value={formValues.categoryicon}
               onChange={handleFileChange}
             />
             {errors?.categoryicon && (
@@ -185,6 +202,7 @@ const Country: React.FC = () => {
               size="sm"
               title="Add"
               type="submit"
+              loading={loading}
               styles={{ backgroundColor: "#735DA5", marginTop: "30px" }}
             />
           </Grid>

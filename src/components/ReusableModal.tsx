@@ -22,6 +22,7 @@ interface ReusableModalProps {
   buttonBgColor?: string;
   buttonTextSize?: string;
   infoContent?: string; 
+  style?:any;
 }
 
 const ReusableModal: React.FC<ReusableModalProps> = ({
@@ -40,10 +41,11 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
   buttonBgColor,
   buttonTextSize,
   infoContent, 
+  style
 }) => {
   return (
-    <Modal open={open}>
-      <ModalDialog size={size}>
+    <Modal open={open} >
+      <ModalDialog size={size} sx={style}>
         <span onClick={() => setOpen(false)}>
           <ModalClose />
         </span>
@@ -54,8 +56,7 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
 
         {type==="delete" && <>
         
-            <DialogContent>{subHeading}</DialogContent>
-            <Button sx={{ color: buttonColor }}>{buttonText}</Button>
+           {component}
         </>}
 
         {type === 'logout' && (

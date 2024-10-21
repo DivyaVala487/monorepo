@@ -5,8 +5,10 @@ const BaseURL = "http://localhost:8000/api";
 
 const getHeaders = async (header?: boolean) => {
   const headers: Record<string, string> = {
-    'Content-Type': 'multipart/form-data'
+    'Content-Type': header ? 'multipart/form-data' : "application/json"
   };
+
+  console.log(headers,"headers")
   if (header) {
     // headers.Authorization = `Bearer ${getJwt()}`;
   }

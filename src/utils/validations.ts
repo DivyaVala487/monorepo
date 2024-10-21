@@ -39,7 +39,7 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
   }
 
   if (countryicon===null) {
-    obj["categoryicon"] = "Category icon is required";
+    obj["countryicon"] = "Category icon is required";
   }
 
   if (!subCategory) {
@@ -48,9 +48,10 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
 
   if (!icon) {
     obj["icon"] = "Sub-Category Icon is required.";
-  } else if (!isValidFileType(icon.name)) {
-    obj["icon"] = "Invalid file type. Please upload an image.";
-  }
+  } 
+  // else if (!isValidFileType(icon)) {
+  //   obj["icon"] = "Invalid file type. Please upload an image.";
+  // }
 
   return obj;
 };

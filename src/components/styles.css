@@ -321,7 +321,9 @@
     font-size: 1rem;
     color: #ccc;
   }
-  
+  .active{
+    color: #D3C5E5;
+  }
   @media (max-width: 768px) {
     .footer-grid {
       display: flex;

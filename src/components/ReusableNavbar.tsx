@@ -4,7 +4,7 @@ import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import "./styles.css" 
 import { HeaderProps } from "../dtos/HeaderDto";
-
+import { useLocation } from "react-router-dom";
 const Header: React.FC<HeaderProps> = ({
   title,
   navLinks,
@@ -22,6 +22,8 @@ const Header: React.FC<HeaderProps> = ({
     localStorage.removeItem("user_name");
     window.location.href = "/login";
   };
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -80,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({
             >
               <a
                 href={link.url}
-                className="web-nav-link"
+                className={currentPath===link.url ? "web-nav-link active" : "web-nav-link"}
                 style={customStyles.navLink}
               >
                 {link.label}
@@ -96,9 +98,9 @@ const Header: React.FC<HeaderProps> = ({
         <FaUserCircle size={30} color="black" />
         <p className="profile-text">{profile}</p>
       </div> */}
-      <button className="logout-button" onClick={handleLogout}>
+      {/* <button className="logout-button" onClick={handleLogout}>
         Logout
-      </button>
+      </button> */}
       <button className="mobile-button" onClick={handleLogout}>
         <FiLogOut size={50} />
       </button>

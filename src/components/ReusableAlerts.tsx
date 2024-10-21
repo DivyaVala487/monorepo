@@ -5,7 +5,7 @@ interface AlertProps {
   backgroundColor?: string;
   textColor?: string;
   duration?: number;
-  icon?: string;
+  icon?: any;
   borderRadius?: string;
   boxShadow?: string;
   position?: 'top-left' | 'top-right' | 'top-center' | 'bottom-left' | 'bottom-right' | 'bottom-center' | 'center';
@@ -57,7 +57,7 @@ const Alerts: React.FC<AlertProps> = ({
       const timer = setTimeout(() => {
         setVisible(false);
         if (onClose) onClose();
-      }, duration);
+      }, 300000);
       return () => clearTimeout(timer);
     }
   }, [duration, onClose]);
@@ -114,11 +114,11 @@ const Alerts: React.FC<AlertProps> = ({
         alignItems:"center"
       }}
     >
-      {icon && <span>{icon}</span>}
+      {icon && <span style={{paddingTop:"8px"}}>{icon}</span>}
       <span style={{color:"white"}}>{message}</span>
       {showCloseButton && (
         <button
-          style={{ color: closeButtonColor, marginLeft: alertPosition}}
+          style={{ color: closeButtonColor, marginLeft: alertPosition,cursor:"pointer"}}
           onClick={() => {
             setVisible(false);
             if (onClose) onClose();

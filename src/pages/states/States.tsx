@@ -9,6 +9,8 @@ import { GridColDef } from "@mui/x-data-grid";
 import { networkUrls } from "../../services/networkrls";
 import validateForm from "../../utils/validations";
 import { Get, Post } from "../../services/apiServices";
+import { Cancel, CheckCircle } from "@mui/icons-material";
+import Alerts from "../../components/ReusableAlerts";
 
 const States: React.FC = () => {
   const [formValues, setFormValues] = useState({
@@ -19,12 +21,25 @@ const States: React.FC = () => {
   });
   const [errors, setErrors] = useState<any>({});
   const [rows, setRows] = useState<
-    { id: number; country: string; shortName: string; state: string; gst: boolean }[]
+    {
+      id: number;
+      country: string;
+      shortName: string;
+      state: string;
+      gst: boolean;
+    }[]
   >([]);
-  const [countries, setCountries] = useState<{ label: string; value: string }[]>([]); // For dropdown
-  const [selectedCountry, setSelectedCountry] = useState<number | null>(null); // Country ID
+  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
+    null
+  );
+  const [alert, showAlert] = useState<any>(false);
+  const[alertInfo,setAlertInfo]=useState({message:"",isSuccess:false})
+  const [loading, setLoading] = useState(false);
+  const [countries, setCountries] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
 
-  // Fetch countries on component mount
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -40,31 +55,30 @@ const States: React.FC = () => {
     };
 
     fetchCountries();
+    fetchStates();
   }, []);
 
-  // Fetch states based on the selected country
-  const fetchStates = async (country_id: number) => {
+  const fetchStates = async () => {
     try {
-      const payload ={
-        country_id
-      }
-      const response = await Post(networkUrls.getAllStates, payload,false);
-      console.log(response,"poststate")
-      const fetchedStates = response.data.data.map((state: any, index: number) => ({
-        id: index + 1,
-        country: state.country_name,
-        shortName: state.short_name,
-        state: state.state_name,
-        gst: state.gst,
-      }));
+      const response = await Get(networkUrls.getAllStates, false);
+      console.log(response, "poststate");
+      const fetchedStates = response.data.data.map(
+        (state: any, index: number) => ({
+          id: index + 1,
+          country: state.name,
+          shortName: state.short_name,
+          state: state.state_name,
+          gst: state.gst,
+        })
+      );
       setRows(fetchedStates);
     } catch (error) {
       console.error("Error fetching states", error);
     }
   };
-// useEffect(()=>{
-// fetc
-// },[])
+
+  // fetc
+  // },[])
   // Handle form submission (POST request to add state)
   // const handleSubmit = async (e: any) => {
   //   e.preventDefault();
@@ -90,34 +104,57 @@ const States: React.FC = () => {
   // };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("Form submitted");  // Debugging log
-    
+    console.log("Form submitted");
+
     const validationErrors = validateForm(formValues);
     setErrors(validationErrors);
-    console.log("Validation errors:", validationErrors);  // Debug validation errors
-    
-    if (Object.keys(validationErrors).length === 0 && selectedCountry) {
+    console.log("Validation errors:", validationErrors);
+
+    if (
+      !validationErrors.country &&
+      !validationErrors.shortName &&
+      !validationErrors.gst &&
+      !validationErrors.state
+    ) {
+      setLoading(true);
       const newState = {
         country_id: selectedCountry,
         state_name: formValues.state,
         short_name: formValues.shortName,
         gst: formValues.gst,
       };
-      console.log("Payload: ", newState);  // Log payload before API call
       try {
-        const response = await Post(networkUrls.addState, newState, false);
-        console.log("API response:", response);  // Log API response
-        setFormValues({ country: "", shortName: "", state: "", gst: false });
-        fetchStates(selectedCountry);  // Fetch updated states after submission
+        const response:any = await Post(networkUrls.addState, newState, false);
+        if (response?.data?.api_status === 200) {
+          console.log(response.data.message,"response")
+          showAlert(true);
+          setLoading(false)
+          setAlertInfo({
+            message:response?.data?.message,
+            isSuccess:true
+          })
+          console.log("API response:", response);
+          setFormValues({ country: "", shortName: "", state: "", gst: false });
+          fetchStates();
+
+        } else {
+          showAlert(true);
+          setLoading(false)
+          setAlertInfo({
+            message:response?.message,
+            isSuccess:false
+          })
+          
+        }
       } catch (error) {
         console.error("Error adding state", error);
+        setLoading(false)
       }
     } else {
-      console.log("Validation errors:", validationErrors);  // Log validation errors
+      console.log("Validation errors:", validationErrors);
     }
   };
-  
-  
+
   const handleChange = (value: string | boolean, fieldName: string) => {
     setFormValues((prevValues) => {
       const updatedValues = {
@@ -134,24 +171,20 @@ const States: React.FC = () => {
     });
   };
 
-  // const handleCountryChange = (value: string | undefined) => {
-  //   const countryId = value ? parseInt(value) : null; // Convert to number or null
-  //   setSelectedCountry(countryId); // Use the correct state setter
-  // };
   const handleCountryChange = (value: string | undefined) => {
     const countryId = value ? parseInt(value) : null; // Convert to number or null
-    setSelectedCountry(countryId);  // Update selected country ID
-  
+    setSelectedCountry(countryId); // Update selected country ID
+
     // Update formValues.country to ensure validation passes
     setFormValues((prevValues) => ({
       ...prevValues,
-      country: value || "",  // Update the form value for country
+      country: value || "", // Update the form value for country
     }));
-  
+
     // Clear any existing country validation error
     setErrors((prevErrors: any) => ({
       ...prevErrors,
-      country: undefined,  // Remove country error
+      country: undefined, // Remove country error
     }));
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,9 +205,45 @@ const States: React.FC = () => {
     },
   ];
 
+  console.log(alertInfo,"alertinfo")
+
   return (
     <>
       <form onSubmit={handleSubmit}>
+        {alert && (
+          <Alerts
+            message={
+              alertInfo.isSuccess ? alertInfo.message : alertInfo.message
+            }
+            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
+            textColor="light"
+            duration={2000}
+            icon={
+              alertInfo.isSuccess ? (
+                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+              ) : (
+                <Cancel style={{ color: "white", fontSize: "24px" }} />
+              )
+            }
+            borderRadius="8px"
+            boxShadow="0 4px 8px rgba(0,0,0,0.2)"
+            position="top-right"
+            height="25px"
+            width="400px"
+            padding="20px"
+            margin="30px"
+            borderColor="black"
+            borderWidth="2px"
+            showCloseButton={true}
+            closeButtonColor="darkred"
+            fontSize="18px"
+            fontWeight="bold"
+            textAlign="left"
+            zIndex={1000}
+            alertPosition="200px"
+            onClose={() => showAlert(false)}
+          />
+        )}
         <Grid container spacing={2} sx={{ flexGrow: 1, padding: "2rem" }}>
           <Grid xs={12} md={4}>
             <label>Country</label>
@@ -182,9 +251,12 @@ const States: React.FC = () => {
               options={countries}
               placeholder="Select your Country"
               width={333}
+              value={formValues.country}
               onChange={(value) => handleCountryChange(value)}
             />
-            {errors?.country && <p className="error-message">{errors?.country}</p>}
+            {errors?.country && (
+              <p className="error-message">{errors?.country}</p>
+            )}
           </Grid>
           <Grid xs={12} md={4}>
             <InputField
@@ -210,7 +282,9 @@ const States: React.FC = () => {
               value={formValues.shortName}
               label="Short Name"
             />
-            {errors?.shortName && <p className="error-message">{errors?.shortName}</p>}
+            {errors?.shortName && (
+              <p className="error-message">{errors?.shortName}</p>
+            )}
           </Grid>
           <Grid xs={12} md={3}>
             <label>Is GST Required?</label>
@@ -227,6 +301,7 @@ const States: React.FC = () => {
               size="sm"
               title="Submit"
               type="submit"
+              loading={loading}
               styles={{ backgroundColor: "#735DA5" }}
             />
           </Grid>
