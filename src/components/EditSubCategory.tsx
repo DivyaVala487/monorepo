@@ -5,7 +5,7 @@ import ReuseableButton from "./ResusableButton";
 import validateForm from "../utils/validations";
 import { Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
-const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
+const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, showAlert}:any) => {
   const [subCategoryData, setSubCategoryData] = useState({ subCategory: "", icon: "" });
   const [errors, setErrors] = useState<any>({});
   const handleChange = (value: string, field: string) => {
@@ -23,7 +23,7 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
     }));
   };
 
-  console.log(data,"data");
+  console.log(data,"data for seeing the data value");
 
 
 
@@ -35,6 +35,11 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
     })
 
   },[])
+
+  const handleFileChange = (e: any) => {
+    const file = e.target.files[0];
+    handleChange(file, "icon");
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -56,9 +61,13 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
         subCategoryData: {},
       }));
 
+      console.log(subCategoryData,"SubCategoryDataToSee");
+
       const formData = new FormData();
-      formData.append("name",subCategoryData.subCategory );
+      formData.append("sub_category_name",subCategoryData.subCategory );
       formData.append("image", subCategoryData.icon);
+      formData.append("category_id", data.categoryId);
+      formData.append("subcategory_id", data.subcategoryId)
 
       try {
         const response:any = await Put(
@@ -66,17 +75,21 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
           formData,
           true
         );
-        if(response?.data?.api_status === 200){
+        if(response?.response?.api_status === 200){
           setAlertInfo({
-            message:response?.data?.message,
+            message:response?.message,
             isSuccess:true
           })
           setEditOpenModal(false)
+          showAlert(true)
+          getSubCategories()
+      
         }else{
           setAlertInfo({
             message:response?.data?.message,
             isSuccess:true
           })
+          showAlert(true)
           setEditOpenModal(false);
         }
       } catch (error) {
@@ -111,9 +124,10 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo}:any) => {
               label="Sub-Category Icon"
               name="icon"
               size="sm"
+              // value={subCategoryData.icon}
               // ref={fileInputRef}
               style={{ width: "100%", height: "36px", padding: "6px" }}
-              onChange={(e) => handleChange(e.target.value, "icon")}
+              onChange={handleFileChange}
             />
             {errors.subCategoryData?.icon && (
               <p className="error-message" style={{ fontSize: "1rem" }}>
