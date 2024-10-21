@@ -492,8 +492,8 @@ export const addSubCategories = async (
 ): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
-
     try {
+        const createdSubCategories = [];
         for (const subCategoryDetails of subCategoryDetailsArray) {
             const { category_id, sub_category_name, icon } = subCategoryDetails;
             const existingCategory = await CategoryModel.findOne({
@@ -508,7 +508,6 @@ export const addSubCategories = async (
                     message: getResponseMessage("CATEGORY_NOT_FOUND"),
                 });
             }
-
 
             const existingSubCategory = await SubcategoryModel.findOne({
                 where: {
@@ -526,21 +525,17 @@ export const addSubCategories = async (
                 });
             }
 
-
             let uploadedIconUrl = null;
-            if (icon) {
+            if (icon && icon.path) {
                 const uploadResponse = await cloudinary.uploader.upload(icon.path, {
                     folder: "upload",
                     allowed_formats: ["jpg", "jpeg", "png"],
                 });
                 uploadedIconUrl = uploadResponse.secure_url;
-                console.log(uploadResponse.secure_url, "Secure url");
             }
 
 
-
-
-            await SubcategoryModel.create(
+            const createdSubCategory = await SubcategoryModel.create(
                 {
                     category_id,
                     sub_category_name,
@@ -548,15 +543,23 @@ export const addSubCategories = async (
                 },
                 { transaction }
             );
+
+
+            createdSubCategories.push({
+                sub_category_name: createdSubCategory.get("sub_category_name"),
+                sub_category_id: createdSubCategory.get("subcategory_id"),
+                icon: uploadedIconUrl || "",
+            });
         }
 
 
         await transaction.commit();
 
+
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("SUBCATEGORIES_CREATED_SUCCESSFULLY"),
-            data: subCategoryDetailsArray,
+            data: createdSubCategories,
         });
     } catch (error) {
 
@@ -570,6 +573,8 @@ export const addSubCategories = async (
         return result;
     }
 };
+
+
 
 
 
