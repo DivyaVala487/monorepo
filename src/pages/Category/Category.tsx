@@ -16,6 +16,7 @@ const Category = () => {
     categoryicon: null,
   });
   const [alert, showAlert] = useState<any>(false);
+  const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<
     { id: number; category: string; image: string }[]
   >([]);
@@ -41,6 +42,7 @@ const Category = () => {
     setErrors(validationErrors);
 
     if (!validationErrors.category && !validationErrors.categoryicon) {
+      setLoading(true)
       try {
         const formData = new FormData();
         formData.append("name", formValues.category);
@@ -50,16 +52,25 @@ const Category = () => {
         const response = await Post(networkUrls.addCategory, formData, true);
         if (response?.data?.api_status === 200) {
           console.log("Success:", response);
-          setFormValues({})
+          setFormValues({category:""})
           showAlert(true);
+          setLoading(false)
+          const fileInput = document.querySelector(
+            'input[name="categoryicon"]'
+          ) as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = "";
+          }
           setSubmissionSuccess(true)
           fetchCategories()
         } else {
           console.error("Error:", response?.data?.api_status);
           setSubmissionSuccess(false)
+          setLoading(false)
           showAlert(true);
         }
       } catch (error) {
+        setLoading(false);
         console.error("Request failed", error);
         setSubmissionSuccess(false); 
         showAlert(true);
@@ -154,7 +165,7 @@ const Category = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container sx={{ padding: "20px", display: "flex", gap: 4 }}>
+        <Grid container sx={{ padding: "2rem", display: "flex", gap: 4 }}>
           <Grid xs={12} md={3}>
             <InputField
               type="text"
@@ -178,7 +189,7 @@ const Category = () => {
               name="categoryicon"
               size="sm"
               style={{ width: "333px", height: "36px",padding:"6px" }}
-                value={formValues.categoryiconicon}
+                // value={formValues.categoryicon}
               onChange={handleFileChange}
             />
             {errors?.categoryicon && (
@@ -190,19 +201,22 @@ const Category = () => {
               variant="solid"
               title="Submit"
               type="submit"
+              loading={loading}
               styles={{ backgroundColor: "#735DA5" }}
             />
           </Grid>
-        </Grid>
-      </form>
-      <ReusableDataGrid
+          <ReusableDataGrid
         rows={rows}
         columns={columns}
         initialPageSize={5}
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
+        sx={{  width: "95%" }}
       />
+        </Grid>
+      </form>
+     
     </>
   );
 };

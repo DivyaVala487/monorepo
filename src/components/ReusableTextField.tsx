@@ -60,6 +60,7 @@ const InputField: React.FC<InputFieldProps> = ({
       {label && (
         <Typography component="label" htmlFor={id} className="label-heading">
           {label}
+          <span style={{color:"red"}}>*</span>
         </Typography>
       )}
       {!multiline ? (

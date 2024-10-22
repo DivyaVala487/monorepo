@@ -5,9 +5,12 @@ import ReuseableButton from "./ResusableButton";
 import validateForm from "../utils/validations";
 import { Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
+import DummyImage from "../assessts/images/image.png";
 const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, showAlert}:any) => {
   const [subCategoryData, setSubCategoryData] = useState({ subCategory: "", icon: "" });
   const [errors, setErrors] = useState<any>({});
+  const[loading,setLoading]=useState(false);
+  const[isDummy,setIsDummy]=useState(false);
   const handleChange = (value: string, field: string) => {
     setSubCategoryData((prev: any) => ({
       ...prev,
@@ -38,6 +41,7 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
 
   const handleFileChange = (e: any) => {
     const file = e.target.files[0];
+    setIsDummy(true)
     handleChange(file, "icon");
   };
 
@@ -45,16 +49,20 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
     e.preventDefault();
     const subCategoryDataErrors = validateForm(subCategoryData);
 
-    if (Object.keys(subCategoryDataErrors).length > 0) {
+    console.log(typeof(subCategoryData.icon)==="string",subCategoryDataErrors.subCategory)
+
+    console.log(subCategoryDataErrors,"subCategoryDataErrors");
+
+    if ( subCategoryDataErrors.subCategory && typeof(subCategoryData.icon)==="string") {
       setErrors((prevErrors: any) => ({
         ...prevErrors,
         subCategoryData: subCategoryDataErrors,
       }));
     } else {
+      setLoading(true);
       setSubCategoryData({ subCategory: "", icon: "" });
-      // if (fileInputRef.current) {
-      //   fileInputRef.current.value = "";
-      // }
+
+      
 
       setErrors((prevErrors: any) => ({
         ...prevErrors,
@@ -75,22 +83,30 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
           formData,
           true
         );
+        console.log(response,"res");
         if(response?.response?.api_status === 200){
           setAlertInfo({
-            message:response?.message,
+            message:response?.response?.message,
             isSuccess:true
           })
+          const fileInput = document.querySelector(
+            'input[name="icon"]'
+          ) as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = "";
+          }
           setEditOpenModal(false)
           showAlert(true)
           getSubCategories()
-      
+          setLoading(false);
         }else{
           setAlertInfo({
-            message:response?.data?.message,
-            isSuccess:true
+            message:response?.response?.message,
+            isSuccess:false
           })
           showAlert(true)
           setEditOpenModal(false);
+          setLoading(false);
         }
       } catch (error) {
         console.log("Error getting adding updating sub-category", error);
@@ -136,13 +152,14 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
             )}
           </Grid>
           < Grid xs={12} md={1}>
-          <img src={subCategoryData.icon} alt="icon" style={{height:"50px",width:"50px",paddingTop:"12px"}}/>
+          <img src={isDummy ? DummyImage : subCategoryData.icon} alt="icon" style={{height:"50px",width:"50px",paddingTop: isDummy ? "20px" : "12px"}}/>
           </Grid>
           <Grid xs={12} md={12}>
             <ReuseableButton
               variant="solid"
               title="Update"
               type="submit"
+              loading={loading}
               styles={{ backgroundColor: "#735DA5" }}
             />
           </Grid>

@@ -33,6 +33,7 @@ const SubCategory = () => {
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
+  const [isSubmit, setIsSubmit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [filterRows, setFilterRows] = useState([]);
   const [data, setData] = useState([]);
@@ -122,8 +123,8 @@ const SubCategory = () => {
 
   const handleAddRow = () => {
     const firstRowErrors = validateForm(firstRow);
-
-    if (Object.keys(firstRowErrors).length > 0) {
+    if (firstRowErrors.subCategory && firstRowErrors.icon) {
+      console.log("hy")
       setErrors((prevErrors: any) => ({
         ...prevErrors,
         firstRow: firstRowErrors,
@@ -131,9 +132,13 @@ const SubCategory = () => {
     } else {
       setRows((prevRows) => [...prevRows, { ...firstRow, isEditing: true }]);
       setFirstRow({ subCategory: "", icon: "" });
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      const fileInput = document.querySelector(
+        'input[name="icon"]'
+      ) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
       }
+      setIsSubmit(true);
 
       setErrors((prevErrors: any) => ({
         ...prevErrors,
@@ -147,12 +152,11 @@ const SubCategory = () => {
     setCategoryId(categoryId);
 
     setCategoryValue(value);
-    setIsOpen(true);
+    if (value !== null) {
+      setIsOpen(true);
+    }
 
-    // setErrors((prevErrors: any) => ({
-    //   ...prevErrors,
-    //   category: undefined,
-    // }));
+   ;
   };
   const handleChange = (value: string, field: string, index: number) => {
     const updatedRows = [...rows];
@@ -191,23 +195,24 @@ const SubCategory = () => {
     setEditOpenModal(true);
     setFilterRows(row);
   };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const firstRowErrors = validateForm(firstRow);
     let isValid = Object.keys(firstRowErrors).length === 0;
-
+  
     const updatedErrors = rows.map((row) => validateForm(row));
     const allRowsValid = updatedErrors.every(
       (err) => Object.keys(err).length === 0
     );
     setErrors({ dynamicRows: updatedErrors });
-
+  
     if (allRowsValid) {
       setLoading(true);
       const formData: any = new FormData();
-
-      rows.forEach((row, index) => {
+  
+      rows.forEach((row) => {
         formData.append(`subcategories`, row.subCategory);
         if (row.icon instanceof File) {
           formData.append(`image`, row.icon);
@@ -218,13 +223,23 @@ const SubCategory = () => {
         const response = await Post(networkUrls.addSubCategory, formData, true);
         if (response?.data?.api_status === 200) {
           showAlert(true);
-          console.log(response, "response");
           setAlertInfo({
             message: response?.data?.message,
             isSuccess: true,
           });
           setLoading(false);
           setCategoryValue("");
+  
+          // Clear the firstRow state
+          setFirstRow({ subCategory: "", icon: "" });
+          setRows([]); // Clear all rows
+  
+          // // Reset the file input value
+          // const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+          // if (fileInput) {
+          //   fileInput.value = ""; 
+          // }
+  
           getSubCategories();
         } else {
           setLoading(false);
@@ -236,13 +251,14 @@ const SubCategory = () => {
         }
       } catch (error) {
         console.log("Error adding sub-category", error);
-        setLoading(false)
+        setLoading(false);
       }
     } else {
       console.log("Validation Failed");
     }
   };
-
+  
+  
   const getSubCategories = async () => {
     try {
       const response = await Get(networkUrls.getSubCategories, false);
@@ -301,7 +317,7 @@ const SubCategory = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "20px" }}>
+        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "2rem" }}>
           <Grid xs={12} md={3}>
             <Dropdown
               options={categories}
@@ -358,6 +374,20 @@ const SubCategory = () => {
                   onClick={handleAddRow}
                 />
               </Grid>
+              {isSubmit &&
+              <Grid
+               container
+               spacing={4}
+               xs={12}
+               md={12}
+               alignItems="center"
+               sx={{
+                 backgroundColor: "#D3C5E5",
+                 width: "90%",
+                 margin: "10px",
+                 borderRadius:"10px"
+               }}
+              >
               {rows.map((row, index) => (
                 <Grid
                   container
@@ -429,6 +459,7 @@ const SubCategory = () => {
                   </Grid> */}
                 </Grid>
               ))}
+              
               <Grid xs={12} md={12}>
                 <ReuseableButton
                   variant="solid"
@@ -438,9 +469,21 @@ const SubCategory = () => {
                   styles={{ backgroundColor: "#735DA5" }}
                 />
               </Grid>
+              </Grid>}
             </Grid>
           )}
         </Grid>
+      
+      </form>
+      <ReusableDataGrid
+        rows={data}
+        columns={columns}
+        initialPageSize={5}
+        pageSizeOptions={[5, 10, 20]}
+        checkboxSelection={false}
+        disableRowSelectionOnClick={true}
+        sx={{width:"90%",marginLeft:"30px"}}
+      />
         {editOpenModal && (
           <ReusableModal
             open={editOpenModal}
@@ -452,6 +495,8 @@ const SubCategory = () => {
                 data={filterRows}
                 setAlertInfo={setAlertInfo}
                 setEditOpenModal={setEditOpenModal}
+                showAlert={showAlert}
+                getSubCategories={getSubCategories}
               />
             }
             size="lg"
@@ -477,15 +522,6 @@ const SubCategory = () => {
             style={{ width: 500 }}
           />
         )}
-      </form>
-      <ReusableDataGrid
-        rows={data}
-        columns={columns}
-        initialPageSize={5}
-        pageSizeOptions={[5, 10, 20]}
-        checkboxSelection={false}
-        disableRowSelectionOnClick={true}
-      />
     </>
   );
 };

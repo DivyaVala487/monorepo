@@ -25,7 +25,7 @@ export const navLinks = [
   };
   
   export const profile = "Sandeep";
-  export const title = "ABSYZ Inc";
+  export const title = "Code Blocks";
   export const inputType = "text";
   export const inputPlaceHolder = "Search Here...";
 

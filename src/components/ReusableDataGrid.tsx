@@ -19,6 +19,7 @@ interface ReusableDataGridProps {
   loading?: boolean;
   autoHeight?: boolean;
   pagination?: true;
+  sx?:any;
   onRowSelectionModelChange?: (selectionModel: GridRowSelectionModel) => void;
 }
 
@@ -33,6 +34,7 @@ const ReusableDataGrid: React.FC<ReusableDataGridProps> = ({
   loading = false,
   autoHeight = true,
   pagination = true,
+  sx,
   onRowSelectionModelChange,
   ...restProps
 }) => {
@@ -46,7 +48,7 @@ const ReusableDataGrid: React.FC<ReusableDataGridProps> = ({
   };
 
   return (
-    <Box sx={{ marginLeft:"20px", width: "95%" }}>
+    <Box sx={sx}>
       <DataGrid
         rows={rows}
         columns={columns}

@@ -11,11 +11,11 @@ import { GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
-import { CheckCircle, Cancel } from '@mui/icons-material';
+import { CheckCircle, Cancel } from "@mui/icons-material";
 const Country: React.FC = () => {
   const [formValues, setFormValues] = useState<any>({
     country: "",
-    countryicon: "",
+    countryicon: null,
   });
   const [errors, setErrors] = useState<any>({});
   const [alert, showAlert] = useState<any>(false);
@@ -88,7 +88,13 @@ const Country: React.FC = () => {
         const response = await Post(networkUrls.addCountry, formData, true);
         if (response?.data?.api_status === 200) {
           showAlert(true);
-          setFormValues({ country: "" });
+          setFormValues({ country: "", countryicon: "" });
+          const fileInput = document.querySelector(
+            'input[name="countryicon"]'
+          ) as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = "";
+          }
           fetchCountries();
           setLoading(false);
 
@@ -118,9 +124,10 @@ const Country: React.FC = () => {
       };
 
       const validationErrors = validateForm(updatedValues);
-      setErrors(validationErrors);
-
-      setErrors(validationErrors);
+      setErrors((prevErrors: any) => ({
+        ...prevErrors,
+        [fieldName]: validationErrors[fieldName],
+      }));
 
       return updatedValues;
     });
@@ -165,7 +172,7 @@ const Country: React.FC = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "20px" }}>
+        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "2rem" }}>
           <Grid xs={12} md={3}>
             <InputField
               type="text"
@@ -188,10 +195,10 @@ const Country: React.FC = () => {
               name="countryicon"
               size="sm"
               style={{ width: "333px", height: "36px", padding: "6px" }}
-              value={formValues.categoryicon}
+              // value={formValues.countryicon}
               onChange={handleFileChange}
             />
-            {errors?.categoryicon && (
+            {errors?.countryicon && (
               <p className="error-message">{errors?.countryicon}</p>
             )}
           </Grid>
@@ -206,16 +213,17 @@ const Country: React.FC = () => {
               styles={{ backgroundColor: "#735DA5", marginTop: "30px" }}
             />
           </Grid>
+          <ReusableDataGrid
+            rows={rows}
+            columns={columns}
+            initialPageSize={5}
+            pageSizeOptions={[5, 10, 20]}
+            checkboxSelection={false}
+            disableRowSelectionOnClick={true}
+            sx={{ marginLeft: "40px", width: "95%" }}
+          />
         </Grid>
       </form>
-      <ReusableDataGrid
-        rows={rows}
-        columns={columns}
-        initialPageSize={5}
-        pageSizeOptions={[5, 10, 20]}
-        checkboxSelection={false}
-        disableRowSelectionOnClick={true}
-      />
     </>
   );
 };

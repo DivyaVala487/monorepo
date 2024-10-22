@@ -33,6 +33,7 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
     {label && (
       <Typography component="label" htmlFor={id} className="label-heading">
         {label}
+        <span style={{color:"red"}}>*</span>
       </Typography>
     )}
     <Select

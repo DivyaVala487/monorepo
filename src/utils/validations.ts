@@ -16,21 +16,21 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
     formValues;
   console.log(formValues, "shh");
   const obj: Record<string, string> = {};
-  if (country === "") {
+  if (country === "" || country===null) {
     obj["country"] = "Country is Required";
   }
-  if (state === "") {
+  if (state===null || state==="") {
     obj["state"] = "State is Required";
   }
-  if (city === "") {
+  if (!city) {
     obj["city"] = "City is Required";
   }
   if (shortName === "") {
     obj["shortName"] = "ShortName is Required";
   }
-  if (gst === false) {
-    obj["gst"] = "Required Field";
-  }
+  // if (gst === false) {
+  //   obj["gst"] = "Required Field";
+  // }
   if (category ==="" ) {
     obj["category"] = "Category name is required";
   }
@@ -38,8 +38,8 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
     obj["categoryicon"] = "Category icon is required";
   }
 
-  if (countryicon===null) {
-    obj["countryicon"] = "Category icon is required";
+  if (countryicon===null || countryicon==="") {
+    obj["countryicon"] = "Country icon is required";
   }
 
   if (!subCategory) {

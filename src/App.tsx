@@ -33,7 +33,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-      <Header title="Absyz" inputPlaceHolder="Search.."  navLinks={navLinks}/>
+      <Header title="Code Blocks" inputPlaceHolder="Search.."  navLinks={navLinks}/>
         <Routes>
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/" element={<Country />} />

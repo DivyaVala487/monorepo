@@ -77,31 +77,7 @@ const States: React.FC = () => {
     }
   };
 
-  // fetc
-  // },[])
-  // Handle form submission (POST request to add state)
-  // const handleSubmit = async (e: any) => {
-  //   e.preventDefault();
-  //   const validationErrors = validateForm(formValues);
-  //   setErrors(validationErrors);
 
-  //   if (Object.keys(validationErrors).length === 0 && selectedCountry) {
-  //     const newState = {
-  //       country_id: selectedCountry,
-  //       state_name: formValues.state,
-  //       short_name: formValues.shortName,
-  //       gst: formValues.gst,
-  //     };
-  //     try {
-  //       await Post(networkUrls.addState, newState, false);
-  //       setFormValues({ country: "", shortName: "", state: "", gst: false });
-  //       // Refresh states after adding a new one
-  //       fetchStates(selectedCountry);
-  //     } catch (error) {
-  //       console.error("Error adding state", error);
-  //     }
-  //   }
-  // };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     console.log("Form submitted");
@@ -113,7 +89,6 @@ const States: React.FC = () => {
     if (
       !validationErrors.country &&
       !validationErrors.shortName &&
-      !validationErrors.gst &&
       !validationErrors.state
     ) {
       setLoading(true);
@@ -141,7 +116,7 @@ const States: React.FC = () => {
           showAlert(true);
           setLoading(false)
           setAlertInfo({
-            message:response?.message,
+            message:response?.data?.message,
             isSuccess:false
           })
           
@@ -172,19 +147,17 @@ const States: React.FC = () => {
   };
 
   const handleCountryChange = (value: string | undefined) => {
-    const countryId = value ? parseInt(value) : null; // Convert to number or null
-    setSelectedCountry(countryId); // Update selected country ID
+    const countryId = value ? parseInt(value) : null; 
+    setSelectedCountry(countryId);
 
-    // Update formValues.country to ensure validation passes
     setFormValues((prevValues) => ({
       ...prevValues,
-      country: value || "", // Update the form value for country
+      country: value || "", 
     }));
 
-    // Clear any existing country validation error
     setErrors((prevErrors: any) => ({
       ...prevErrors,
-      country: undefined, // Remove country error
+      country: undefined, 
     }));
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,11 +219,11 @@ const States: React.FC = () => {
         )}
         <Grid container spacing={2} sx={{ flexGrow: 1, padding: "2rem" }}>
           <Grid xs={12} md={4}>
-            <label>Country</label>
             <Dropdown
               options={countries}
               placeholder="Select your Country"
               width={333}
+              label="Country"
               value={formValues.country}
               onChange={(value) => handleCountryChange(value)}
             />
@@ -293,7 +266,6 @@ const States: React.FC = () => {
               name="gst"
               checked={formValues.gst}
             />
-            {errors?.gst && <p className="error-message">{errors?.gst}</p>}
           </Grid>
           <Grid xs={12} md={12}>
             <ReuseableButton
@@ -305,16 +277,18 @@ const States: React.FC = () => {
               styles={{ backgroundColor: "#735DA5" }}
             />
           </Grid>
-        </Grid>
-      </form>
-      <ReusableDataGrid
+          <ReusableDataGrid
         rows={rows}
         columns={columns}
         initialPageSize={5}
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
+        sx={{marginLeft:"9px",width:"95%"}}
       />
+        </Grid>
+      </form>
+      
     </>
   );
 };
