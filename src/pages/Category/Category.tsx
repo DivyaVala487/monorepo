@@ -176,10 +176,12 @@ const Category = () => {
               style={{ width: "333px", height: "36px" }}
               value={formValues.category}
               onChange={(e) => handleChange(e.target.value, "category")}
+              error={errors.category}
+              helperText={errors.category}
             />
-            {errors?.category && (
+            {/* {errors?.category && (
               <p className="error-message">{errors?.category}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <InputField
@@ -191,10 +193,12 @@ const Category = () => {
               style={{ width: "333px", height: "36px",padding:"6px" }}
                 // value={formValues.categoryicon}
               onChange={handleFileChange}
+              error={errors.categoryicon}
+              helperText={errors.categoryicon}
             />
-            {errors?.categoryicon && (
+            {/* {errors?.categoryicon && (
               <p className="error-message">{errors?.categoryicon}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={12}>
             <ReuseableButton

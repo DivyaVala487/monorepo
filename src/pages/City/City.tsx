@@ -204,10 +204,12 @@ console.log(states,"states")
               label="Country"
               value={formValues.country}
               onChange={(value) => handleChange(value, "country")}
+              error={errors.country}
+              helperText={errors.country}
             />
-            {errors?.country && (
+            {/* {errors?.country && (
               <p className="error-message">{errors?.country}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <Dropdown
@@ -217,8 +219,10 @@ console.log(states,"states")
               value={formValues.state}
               label="State"
               onChange={(value) => handleChange(value, "state")}
+              error={errors.state}
+              helperText={errors.state}
             />
-            {errors?.state && <p className="error-message">{errors?.state}</p>}
+            {/* {errors?.state && <p className="error-message">{errors?.state}</p>} */}
           </Grid>
           <Grid xs={12} md={3}>
             <InputField
@@ -230,8 +234,10 @@ console.log(states,"states")
               name="city"
               onChange={(e) => handleChange(e.target.value, "city")}
               label="City"
+              error={errors.city}
+              helperText={errors.city}
             />
-            {errors?.city && <p className="error-message">{errors?.city}</p>}
+            {/* {errors?.city && <p className="error-message">{errors?.city}</p>} */}
           </Grid>
           <Grid xs={12} md={3}>
             <ReuseableButton

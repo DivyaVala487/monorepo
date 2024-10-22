@@ -324,6 +324,10 @@
   .active{
     color: #D3C5E5;
   }
+  .link-title{
+    color: white ;
+    text-decoration: none;
+  }
   @media (max-width: 768px) {
     .footer-grid {
       display: flex;

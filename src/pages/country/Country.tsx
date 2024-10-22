@@ -182,10 +182,12 @@ const Country: React.FC = () => {
               style={{ width: "333px !important", height: "36px" }}
               onChange={(e) => handleChange(e.target.value, "country")}
               label="Country"
+              error={errors?.country}
+              helperText={errors?.country}
             />
-            {errors?.country && (
+            {/* {errors?.country && (
               <p className="error-message">{errors?.country}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <InputField
@@ -197,10 +199,12 @@ const Country: React.FC = () => {
               style={{ width: "333px", height: "36px", padding: "6px" }}
               // value={formValues.countryicon}
               onChange={handleFileChange}
+              error={errors?.countryicon }
+              helperText={errors?.countryicon}
             />
-            {errors?.countryicon && (
+            {/* {errors?.countryicon && (
               <p className="error-message">{errors?.countryicon}</p>
-            )}
+            )} */}
           </Grid>
 
           <Grid xs={12} md={3}>

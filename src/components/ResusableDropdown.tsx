@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Select, { selectClasses } from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
-import { Typography } from '@mui/joy';
+import { FormHelperText, Typography } from '@mui/joy';
 // import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 
 // Define interface for the props
@@ -15,6 +15,8 @@ interface SelectIndicatorProps {
   onClose?:any;
   label?:string;
   id?:string;
+  error?:boolean;
+  helperText?:string;
 }
 
 const Dropdown: React.FC<SelectIndicatorProps> = ({
@@ -26,7 +28,9 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
   name,
   label,
   id,
-  onClose
+  onClose,
+  error,
+  helperText
 }) => {
   return (
     <div  style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
@@ -41,6 +45,7 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
     name={name}
       placeholder={placeholder}
       onClose={onClose}
+      
       // indicator={<KeyboardArrowDown />}
       onChange={(event, newValue) => onChange && onChange(newValue as string)}
       sx={{
@@ -59,6 +64,15 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
         </Option>
       ))}
     </Select>
+    {error && (
+        <>
+          {helperText && (
+            <Typography color={error ? "danger" : "neutral"}>
+              {helperText}
+            </Typography>
+          )}
+        </>
+      )}
     </div>
   );
 };

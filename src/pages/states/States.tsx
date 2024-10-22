@@ -226,10 +226,12 @@ const States: React.FC = () => {
               label="Country"
               value={formValues.country}
               onChange={(value) => handleCountryChange(value)}
+              error={errors.country}
+              helperText={errors.country}
             />
-            {errors?.country && (
+            {/* {errors?.country && (
               <p className="error-message">{errors?.country}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={4}>
             <InputField
@@ -241,8 +243,10 @@ const States: React.FC = () => {
               onChange={(e) => handleChange(e.target.value, "state")}
               value={formValues.state}
               label="State"
+              error={errors.state}
+              helperText={errors.state}
             />
-            {errors?.state && <p className="error-message">{errors?.state}</p>}
+            {/* {errors?.state && <p className="error-message">{errors?.state}</p>} */}
           </Grid>
           <Grid xs={12} md={4}>
             <InputField
@@ -254,10 +258,12 @@ const States: React.FC = () => {
               onChange={(e) => handleChange(e.target.value, "shortName")}
               value={formValues.shortName}
               label="Short Name"
+              error={errors.shortName}
+              helperText={errors.shortName}
             />
-            {errors?.shortName && (
+            {/* {errors?.shortName && (
               <p className="error-message">{errors?.shortName}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <label>Is GST Required?</label>

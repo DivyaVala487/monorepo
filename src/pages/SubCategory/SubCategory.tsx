@@ -329,6 +329,8 @@ const SubCategory = () => {
               value={categoryValue}
               id="category"
               label="Category"
+              // error={errors.category}
+              // helperText={errors.category}
             />
           </Grid>
           {isOpen && (
@@ -341,15 +343,17 @@ const SubCategory = () => {
                   label="SubCategory"
                   value={firstRow.subCategory}
                   style={{ width: "100%", height: "36px" }}
+                  error={errors.firstRow?.subCategory}
+                  helperText={errors.firstRow?.subCategory}
                   onChange={(e) =>
                     handleFirstRowChange(e.target.value, "subCategory")
                   }
                 />
-                {errors.firstRow?.subCategory && (
+                {/* {errors.firstRow?.subCategory && (
                   <p className="error-message">
                     {errors.firstRow?.subCategory}
                   </p>
-                )}
+                )} */}
               </Grid>
               <Grid xs={12} md={5}>
                 <InputField
@@ -360,11 +364,13 @@ const SubCategory = () => {
                   size="sm"
                   ref={fileInputRef}
                   style={{ width: "100%", height: "36px", padding: "6px" }}
+                  error={errors.firstRow?.icon}
+                  helperText={errors.firstRow?.icon}
                   onChange={handleFileChange}
                 />
-                {errors.firstRow?.icon && (
+                {/* {errors.firstRow?.icon && (
                   <p className="error-message">{errors.firstRow?.icon}</p>
-                )}
+                )} */}
               </Grid>
               <Grid xs={12} md={1}>
                 <AddIcon

@@ -4,7 +4,7 @@ import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import "./styles.css" 
 import { HeaderProps } from "../dtos/HeaderDto";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Header: React.FC<HeaderProps> = ({
   title,
   navLinks,
@@ -63,7 +63,9 @@ const Header: React.FC<HeaderProps> = ({
           ))}
         </ul>
       </nav>
-      <h3 className="header-title">{title}</h3>
+      <h3 className="header-title" >
+        <Link to="/" className="link-title">{title}</Link>
+        </h3>
       {/* <div className="search-container">
         <input
           type={inputType}
