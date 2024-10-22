@@ -70,7 +70,6 @@ const InputField: React.FC<InputFieldProps> = ({
           onBlur={onBlur}
           size={size}
           color={color}
-          // required={required}
           disabled={disabled}
           value={value}
           type={type}
