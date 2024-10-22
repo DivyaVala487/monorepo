@@ -22,7 +22,7 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
   if (state===null || state==="") {
     obj["state"] = "State is Required";
   }
-  if (!city) {
+  if (city==="" || city===null) {
     obj["city"] = "City is Required";
   }
   if (shortName === "") {
@@ -52,6 +52,8 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
   // else if (!isValidFileType(icon)) {
   //   obj["icon"] = "Invalid file type. Please upload an image.";
   // }
+
+  console.log(obj,"obj")
 
   return obj;
 };

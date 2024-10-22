@@ -203,10 +203,12 @@ const SubCategory = () => {
     let isValid = Object.keys(firstRowErrors).length === 0;
   
     const updatedErrors = rows.map((row) => validateForm(row));
+    console.log(updatedErrors,"updatedErrors");
     const allRowsValid = updatedErrors.every(
       (err) => Object.keys(err).length === 0
     );
     setErrors({ dynamicRows: updatedErrors });
+
   
     if (allRowsValid) {
       setLoading(true);
@@ -233,12 +235,12 @@ const SubCategory = () => {
           // Clear the firstRow state
           setFirstRow({ subCategory: "", icon: "" });
           setRows([]); // Clear all rows
-  
-          // // Reset the file input value
-          // const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-          // if (fileInput) {
-          //   fileInput.value = ""; 
-          // }
+  setIsSubmit(false)
+  setIsOpen(false);
+          const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = ""; 
+          }
   
           getSubCategories();
         } else {
@@ -317,7 +319,7 @@ const SubCategory = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "2rem" }}>
+        <Grid container spacing={10} sx={{ flexGrow: 1, margin: 0 }}>
           <Grid xs={12} md={3}>
             <Dropdown
               options={categories}
@@ -482,7 +484,7 @@ const SubCategory = () => {
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
-        sx={{width:"90%",marginLeft:"30px"}}
+        sx={{width:"90%",marginLeft:"40px"}}
       />
         {editOpenModal && (
           <ReusableModal

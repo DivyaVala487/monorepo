@@ -217,7 +217,7 @@ const States: React.FC = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={2} sx={{ flexGrow: 1, padding: "2rem" }}>
+        <Grid container spacing={2} sx={{ flexGrow: 1, margin: 0,padding:"2rem" }}>
           <Grid xs={12} md={4}>
             <Dropdown
               options={countries}

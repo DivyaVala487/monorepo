@@ -53,7 +53,7 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
 
     console.log(subCategoryDataErrors,"subCategoryDataErrors");
 
-    if ( subCategoryDataErrors.subCategory && typeof(subCategoryData.icon)==="string") {
+    if ( subCategoryDataErrors.subCategory || typeof(subCategoryData.icon)==="string") {
       setErrors((prevErrors: any) => ({
         ...prevErrors,
         subCategoryData: subCategoryDataErrors,

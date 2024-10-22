@@ -165,7 +165,7 @@ const Category = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container sx={{ padding: "2rem", display: "flex", gap: 4 }}>
+        <Grid container sx={{ margin: 0, display: "flex", gap: 4 ,padding:"2rem"}}>
           <Grid xs={12} md={3}>
             <InputField
               type="text"

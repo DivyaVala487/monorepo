@@ -195,7 +195,7 @@ console.log(states,"states")
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "2rem" }}>
+        <Grid container spacing={10} sx={{ flexGrow: 1, margin: 0 }}>
           <Grid xs={12} md={3}>
             <Dropdown
               options={countries}
@@ -227,6 +227,7 @@ console.log(states,"states")
               size="sm"
               style={{ width: "333px", height: "36px" }}
               value={formValues.city}
+              name="city"
               onChange={(e) => handleChange(e.target.value, "city")}
               label="City"
             />

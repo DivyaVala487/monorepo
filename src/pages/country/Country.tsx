@@ -172,7 +172,7 @@ const Country: React.FC = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, padding: "2rem" }}>
+        <Grid container spacing={10} sx={{ flexGrow: 1, margin: 0 }}>
           <Grid xs={12} md={3}>
             <InputField
               type="text"
