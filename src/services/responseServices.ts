@@ -110,7 +110,37 @@ export const getResponseMessage = (message: string) => {
     SUBCATEGORIES_NOT_FOUND: "Subcategories Not Found",
     SUBCATEGORIES_FOUND: "Subcategories Found",
     SUBCATEGORIES_CREATED_SUCCESSFULLY: "Subcategories Created Successfully",
-    STATE_ALREADY_PRESENT: "State Already Present"
+    STATE_ALREADY_PRESENT: "State Already Present",
+    CITY_ALREADY_PRESENT: "City Already Present",
+    COUNTRY_DELETED_SUCCESSFULLY: "Country Deleted  Successfully",
+    COUNTRY_DELETION_FAILED: "Unable To Delete Country",
+    COUNTRY_NAME_EXISTS: "Country Name Exists",
+    COUNTRY_UPDATING_FAILED: "Country Updating Failed",
+    COUNTRY_UPDATED_SUCCESSFULLY: "Country Updated Successfully",
+    COUNTRY_OR_STATE_NOT_FOUND: "Country  Or State Not Found",
+    STATE_DELETION_FAILED: "State Deletion Failed",
+    STATE_DELETED_SUCCESSFULLY: "State Deleted Successfully",
+    COUNTRY_OR_STATE_NOT_PRESENT: "Country Or State Not Present",
+    STATE_UPDATING_FAILED: "State Updating Failed",
+    STATE_UPDATED_SUCCESSFULLY: "State Updated Successfully",
+    CITY_NOT_PRESENT: "City Not Present",
+    CITY_DELETION_FAILED: "City Deletion Failed",
+    CITY_DELETED_SUCCESSFULLY: "City Deleted Successfully",
+    CITY_UPDATING_FAILED: "City Updating Failed",
+    CITY_UPDATED_SUCCESSFULLY: "City Updated Successfully",
+    CATEGORY_UPDATED_SUCCESSFULLY: "Category Updated Successfully",
+    STATE_NAME_MUST_BE_UNIQUE_FOR_COUNTRY: "State Name Must Be  Unique For Country",
+    SHORT_NAME_MUST_BE_UNIQUE_FOR_COUNTRY: "Short Name Must Be Unique For the Country",
+    CITY_NAME_MUST_BE_UNIQUE_FOR_STATE_AND_COUNTRY: "City Name Must Be Unique For the State And Country",
+    CATEGORY_NAME_MUST_BE_UNIQUE: "Category Name Must Be  Unique",
+    CATEGORY_NOT_PRESENT: "Category Not Present",
+    CATEGORY_DELETING_FAILED: "Category Deleting Failed",
+    CATEGORY_DELETED_SUCCESSFULLY: "Category Deleted Successfully"
+
+
+
+
+
   };
 
   return messageConstant[message] || null;

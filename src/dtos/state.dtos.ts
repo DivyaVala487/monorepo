@@ -10,6 +10,7 @@ export interface IState {
 
 export interface IStateCreation {
     country_id: number;
+    state_id?: number;
     short_name: string;
     state_name: string;
     gst: boolean;
