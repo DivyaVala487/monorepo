@@ -8,6 +8,7 @@ export interface ICity {
 }
 
 export interface ICityCreation {
+    city_id?: number;
     country_id: number;
     state_id: number;
     city_name?: string;

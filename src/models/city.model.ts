@@ -53,14 +53,6 @@ export const CityModel: ModelDefined<ICity, ICityCreation> = sequelize.define(
 );
 
 
-// CityModel.belongsTo(StateModel, {
-//     foreignKey: "state_id",
-//     as: "state",
-// });
 
-// CityModel.belongsTo(CountryModel, {
-//     foreignKey: "country_id",
-//     as: "country",
-// });
 
 

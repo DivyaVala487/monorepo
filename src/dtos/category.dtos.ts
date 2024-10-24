@@ -8,6 +8,7 @@ export interface ICategory {
 }
 
 export interface ICategoryCreation {
+    category_id?: number;
     name: string;
     icon?: string | null;
     slug?: string | null;
