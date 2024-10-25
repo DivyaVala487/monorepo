@@ -105,36 +105,69 @@ export const addSubCategories = async (
 export const getAllSubCategories = async (): Promise<ResponseDto> => {
     let response: ResponseDto;
     try {
+
         const getAllSubCategories = await SubcategoryModel.findAll({
             include: [
                 {
                     model: CategoryModel,
                     as: "category",
-                    attributes: ["name", "icon"],
+                    attributes: ["category_id", "name", "icon"],
                 }
             ],
+            attributes: ["subcategory_id", "category_id", "sub_category_name", "icon"],
         });
-        if (getAllSubCategories.length === 0) {
+
+
+        const categoryMap: Record<string, any> = {};
+
+        getAllSubCategories.forEach((subcategory: any) => {
+            const categoryId = subcategory.category.category_id;
+            const categoryName = subcategory.category.name;
+            const categoryIcon = subcategory.category.icon;
+
+            if (!categoryMap[categoryId]) {
+                categoryMap[categoryId] = {
+                    category_id: categoryId,
+                    category_name: categoryName,
+                    category_icon: categoryIcon,
+                    subcategory: [],
+                };
+            }
+
+
+            categoryMap[categoryId].subcategory.push({
+                subcategory_id: subcategory.subcategory_id,
+                subcategory_name: subcategory.sub_category_name,
+                subcategory_icon: subcategory.icon,
+            });
+        });
+
+
+        const formattedResponse = Object.values(categoryMap);
+
+        if (formattedResponse.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
                 message: getResponseMessage("SUBCATEGORIES_NOT_FOUND"),
             });
         }
+
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("SUBCATEGORIES_FOUND"),
-            data: getAllSubCategories,
+            data: formattedResponse,
         });
     } catch (error) {
-        const result: ResponseDto = setErrorResponse({
+        return setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
             error,
             details: error,
         });
-        return result;
     }
 };
+
+
 
 
 export const deleteSubCategory = async (categoryId: number, subCategoryId: number): Promise<ResponseDto> => {
@@ -281,3 +314,174 @@ export const editSubCategory = async (
         return result;
     }
 };
+
+
+export const editSubCategories = async (
+    subCategoryDetailsArray: { category_id: number, subcategory_id: number, sub_category_name: string, icon: Express.Multer.File | null }[]
+): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+    try {
+        const updatedSubCategories = [];
+
+        for (const subCategoryDetails of subCategoryDetailsArray) {
+            const { category_id, subcategory_id, sub_category_name, icon } = subCategoryDetails;
+
+
+            const existingCategory = await CategoryModel.findOne({ where: { category_id }, transaction });
+            if (!existingCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("CATEGORY_NOT_FOUND"),
+                });
+            }
+
+
+            const existingSubCategory = await SubcategoryModel.findOne({ where: { subcategory_id: subcategory_id }, transaction });
+            if (!existingSubCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("SUBCATEGORY_NOT_FOUND"),
+                });
+            }
+
+            console.log(existingSubCategory, "existingSubCategory");
+
+
+            let uploadedIconUrl = "";
+            if (icon && icon.path) {
+                const uploadResponse = await cloudinary.uploader.upload(icon.path, {
+                    folder: "upload",
+                    allowed_formats: ["jpg", "jpeg", "png"],
+                });
+                uploadedIconUrl = uploadResponse.secure_url;
+            }
+
+
+            await SubcategoryModel.update(
+                {
+                    sub_category_name,
+                    icon: uploadedIconUrl,
+                },
+                {
+                    where: { subcategory_id },
+                    transaction,
+                }
+            );
+
+            updatedSubCategories.push({
+                sub_category_name,
+                subcategory_id,
+                icon: uploadedIconUrl,
+            });
+        }
+
+        await transaction.commit();
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORIES_UPDATED_SUCCESSFULLY"),
+            data: updatedSubCategories,
+        });
+
+    } catch (error) {
+        await transaction.rollback();
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+
+
+export const editingSubCategory = async (
+    subCategoryDetailsArray: { category_id: number, sub_category_name: any, icon: any, subcategory_id: number }[]
+): Promise<ResponseDto> => {
+    const transaction = await sequelize.transaction();
+    let response: ResponseDto;
+    try {
+        const createdSubCategories = [];
+        for (const subCategoryDetails of subCategoryDetailsArray) {
+            const { category_id, sub_category_name, icon, subcategory_id } = subCategoryDetails;
+
+            const existingCategory = await CategoryModel.findOne({
+                where: { category_id },
+                transaction,
+            });
+
+            if (!existingCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("CATEGORY_NOT_FOUND"),
+                });
+            }
+
+            const existingSubCategory = await SubcategoryModel.findOne({
+                where: {
+                    category_id,
+                    subcategory_id,
+                },
+                transaction,
+            });
+
+            if (!existingSubCategory) {
+                await transaction.rollback();
+                return setErrorResponse({
+                    statusCode: 400,
+                    message: getResponseMessage("SUBCATEGORY_NOT_FOUND"),
+                });
+            }
+
+            let uploadedIconUrl = null;
+            if (icon && icon.path) {
+                const uploadResponse = await cloudinary.uploader.upload(icon.path, {
+                    folder: "upload",
+                    allowed_formats: ["jpg", "jpeg", "png"],
+                });
+                uploadedIconUrl = uploadResponse.secure_url;
+            }
+
+            const [affectedCount] = await SubcategoryModel.update(
+                {
+                    sub_category_name,
+                    icon: uploadedIconUrl || "",
+                },
+                {
+                    where: {
+                        category_id,
+                        subcategory_id,
+                    },
+                    transaction,
+                }
+            );
+
+
+            createdSubCategories.push({
+                sub_category_name,
+                sub_category_id: subcategory_id,
+                icon: uploadedIconUrl || "",
+            });
+        }
+        await transaction.commit();
+        return setSuccessResponse({
+            statusCode: 200,
+            message: getResponseMessage("SUBCATEGORIES_UPDATED_SUCCESSFULLY"),
+            data: createdSubCategories,
+        });
+    } catch (error) {
+        await transaction.rollback();
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return result;
+    }
+};
+

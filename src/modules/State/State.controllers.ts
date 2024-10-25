@@ -100,15 +100,18 @@ export const editState = async (req: Request, res: Response): Promise<any> => {
     try {
         let response: ResponseDto;
         const stateDetails: IStateCreation = req.body;
-        const schema = Joi.object().keys({
+        console.log(stateDetails, "StateDetails");
+        const schema = Joi.object().options({}).keys({
             country_id: Joi.number().required().label("country_id"),
             state_id: Joi.number().required().label("state_id"),
-            short_name: Joi.string().optional().label("short_name"),
+            short_name: Joi.string().required().label("short_name"),
             state_name: Joi.string().optional().label("state_name"),
             gst: Joi.boolean().optional().label("gst")
         });
 
         const validateResult: ResponseDto = await schemaValidation(stateDetails, schema);
+
+        console.log(validateResult, "validatearesult");
         if (!validateResult.status) {
             response = sendResponse(validateResult);
             return res.json(response);

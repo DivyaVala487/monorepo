@@ -171,7 +171,7 @@ export const deleteCountry = async (countryId: number): Promise<ResponseDto> => 
     }
 };
 
-export const editCountry = async (countryDetails: ICountryCreation): Promise<ResponseDto> => {
+export const editCountry = async (countryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
     try {
@@ -181,6 +181,7 @@ export const editCountry = async (countryDetails: ICountryCreation): Promise<Res
             where: { country_id },
         });
 
+
         if (!existingCountry) {
             await transaction.rollback();
             return setErrorResponse({
@@ -189,24 +190,20 @@ export const editCountry = async (countryDetails: ICountryCreation): Promise<Res
             });
         }
 
-        const duplicateCountry: any = await CountryModel.findOne({
-            where: {
-                name
-            }
 
-        });
+        let flagUrl = "";
+        if (file) {
 
-        if (duplicateCountry) {
-            await transaction.rollback();
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("COUNTRY_NAME_EXISTS"),
+            const uploadResponse = await cloudinary.uploader.upload(file.path, {
+                folder: "uploads",
+                allowed_formats: ["jpg", "jpeg", "png"]
             });
+            flagUrl = uploadResponse.secure_url;
         }
 
         const countryUpdate = await CountryModel.update(
             {
-                name
+                name, flag: flagUrl,
             },
             {
                 where: {

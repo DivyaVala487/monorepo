@@ -1,4 +1,4 @@
-import { authentication } from "@middleware/middleware";
+
 import Country from "@modules/Country/index";
 
 import State from "@modules/State/index";

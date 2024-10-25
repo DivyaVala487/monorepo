@@ -22,6 +22,7 @@ router.delete("/delete-country/:countryId", CountryControllers.deleteCountry);
 
 // For Editing the Country
 
-router.put("/edit-country", CountryControllers.editCountry);
+router.put("/edit-country", upload.single("image"), CountryControllers.editCountry);
+
 
 export default router;

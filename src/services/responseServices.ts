@@ -135,7 +135,8 @@ export const getResponseMessage = (message: string) => {
     CATEGORY_NAME_MUST_BE_UNIQUE: "Category Name Must Be  Unique",
     CATEGORY_NOT_PRESENT: "Category Not Present",
     CATEGORY_DELETING_FAILED: "Category Deleting Failed",
-    CATEGORY_DELETED_SUCCESSFULLY: "Category Deleted Successfully"
+    CATEGORY_DELETED_SUCCESSFULLY: "Category Deleted Successfully",
+    SUBCATEGORIES_UPDATED_SUCCESSFULLY: "Subcategories edited successfully"
 
 
 
