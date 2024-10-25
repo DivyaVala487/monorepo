@@ -47,13 +47,14 @@ const EditSubCategory = ({data,setEditOpenModal,setAlertInfo,getSubCategories, s
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    console.log("clicked");
     const subCategoryDataErrors = validateForm(subCategoryData);
 
     console.log(typeof(subCategoryData.icon)==="string",subCategoryDataErrors.subCategory)
 
     console.log(subCategoryDataErrors,"subCategoryDataErrors");
 
-    if ( subCategoryDataErrors.subCategory || typeof(subCategoryData.icon)==="string") {
+    if ( subCategoryDataErrors.subCategory) {
       setErrors((prevErrors: any) => ({
         ...prevErrors,
         subCategoryData: subCategoryDataErrors,

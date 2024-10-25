@@ -34,7 +34,7 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
   if (category ==="" ) {
     obj["category"] = "Category name is required";
   }
-  if (categoryicon===null) {
+  if (categoryicon===null || countryicon==="") {
     obj["categoryicon"] = "Category icon is required";
   }
 
@@ -42,7 +42,7 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
     obj["countryicon"] = "Country icon is required";
   }
 
-  if (!subCategory) {
+  if (subCategory ==="") {
     obj["subCategory"] = "Sub-Category is required.";
   }
 
