@@ -10,7 +10,11 @@ import { Post, Get } from "../../services/apiServices";
 import { networkUrls } from "../../services/networkrls";
 import Alerts from "../../components/ReusableAlerts";
 import { Cancel, CheckCircle } from "@mui/icons-material";
-import { number } from "yup";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import ReusableModal from "../../components/ReusableModal";
+import DeleteCity from "../../components/DeleteCity";
+import EditCity from "../../components/EditCity";
 
 const City: React.FC = () => {
   const [formValues, setFormValues] = useState({
@@ -22,17 +26,21 @@ const City: React.FC = () => {
   const [rows, setRows] = useState<
     { id: number; country: string; state: string; city: string }[]
   >([]);
-  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
-    null
-  );
   const [alert, showAlert] = useState<any>(false);
   const [loading, setLoading] = useState(false);
   const [countries, setCountries] = useState<
     { label: string; value: number }[]
   >([]);
   const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
-  const [states, setStates] = useState<{ label: string; value: number ,country_id: number}[]>([]);
-  const [filterStates, setFilterStates] = useState<{ label: string; value: number ,country_id: number}[]>([]);
+  const [states, setStates] = useState<
+    { label: string; value: number; country_id: number }[]
+  >([]);
+  const [filterStates, setFilterStates] = useState<
+    { label: string; value: number; country_id: number }[]
+  >([]);
+  const [deleteOpenModal, setOpenDeleteModal] = useState(false);
+  const [filterRows, setFilterRows] = useState([]);
+  const [editOpenModal, setEditOpenModal] = useState(false);
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -60,6 +68,8 @@ const City: React.FC = () => {
           country: city.country_name,
           state: city.state_name,
           city: city.city_name,
+          city_id: city.city_id,
+          country_id: city.country_id,
         })
       );
       setRows(fetchedCities);
@@ -74,7 +84,7 @@ const City: React.FC = () => {
       const stateOptions = response.data.data.map((state: any) => ({
         label: state.state_name,
         value: state.state_id,
-        country_id:state.country_id
+        country_id: state.country_id,
       }));
       setStates(stateOptions);
       setFilterStates(stateOptions);
@@ -126,36 +136,61 @@ const City: React.FC = () => {
   };
 
   const handleChange = (value: string, fieldName: string) => {
-    console.log("hey")
     setFormValues((prevValues) => {
       const updatedValues = { ...prevValues, [fieldName]: value };
-      console.log(typeof(value)==="number","value")
-      if(fieldName==="country" && typeof(value)==="number"){
-        const countryId= value;
-        console.log(states,countryId,"hhdh")
-        const States= states.filter((state,index)=>state.country_id===countryId)
-        console.log(States,"filterstates")
-        setFilterStates(States)
+      if (fieldName === "country" && typeof value === "number") {
+        const countryId = value;
+        const States = states.filter(
+          (state, index) => state.country_id === countryId
+        );
+        setFilterStates(States);
       }
-      console.log(value,"val")
-      if(typeof(value)==="number" || value!==null){
+      if (typeof value === "number" || value !== null) {
         const validationErrors = validateForm(updatedValues);
-        console.log(validationErrors,"error")
         setErrors((prevErrors: any) => ({
           ...prevErrors,
           [fieldName]: validationErrors[fieldName],
         }));
       }
-     
+
       return updatedValues;
     });
   };
-console.log(states,"states")
+
+  const handleDelete = (row: any) => {
+    setOpenDeleteModal(true);
+    setFilterRows(row);
+  };
+
+  const handleEdit = (row: any) => {
+    setEditOpenModal(true);
+    setFilterRows(row);
+  };
+
+  console.log(filterRows, "states");
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "country", headerName: "Country", flex: 1 },
     { field: "state", headerName: "State", flex: 1 },
     { field: "city", headerName: "City", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            sx={{ cursor: "pointer", color: "#735DA5", marginRight: "10px" }}
+            onClick={() => handleEdit(params.row)}
+          />
+          <DeleteIcon
+            sx={{ cursor: "pointer", color: "#735DA5" }}
+            onClick={() => handleDelete(params.row)}
+          />
+        </>
+      ),
+    },
   ];
 
   return (
@@ -207,9 +242,6 @@ console.log(states,"states")
               error={errors.country}
               helperText={errors.country}
             />
-            {/* {errors?.country && (
-              <p className="error-message">{errors?.country}</p>
-            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <Dropdown
@@ -237,7 +269,6 @@ console.log(states,"states")
               error={errors.city}
               helperText={errors.city}
             />
-            {/* {errors?.city && <p className="error-message">{errors?.city}</p>} */}
           </Grid>
           <Grid xs={12} md={3}>
             <ReuseableButton
@@ -258,6 +289,44 @@ console.log(states,"states")
             disableRowSelectionOnClick={true}
             sx={{ marginLeft: "40px", width: "95%" }}
           />
+          {deleteOpenModal && (
+            <ReusableModal
+              open={deleteOpenModal}
+              setOpen={setOpenDeleteModal}
+              type="delete"
+              component={
+                <DeleteCity
+                  data={filterRows}
+                  setOpenDeleteModal={setOpenDeleteModal}
+                  showAlert={showAlert}
+                  setAlertInfo={setAlertInfo}
+                  fetchCities={fetchCities}
+                />
+              }
+              heading="Are you sure want to delete?"
+              buttonText="Delete"
+              size="lg"
+              style={{ width: 500 }}
+            />
+          )}
+          {editOpenModal && (
+            <ReusableModal
+              open={editOpenModal}
+              setOpen={setEditOpenModal}
+              heading="Edit City"
+              type="edit"
+              component={
+                <EditCity
+                  data={filterRows}
+                  setAlertInfo={setAlertInfo}
+                  setEditOpenModal={setEditOpenModal}
+                  getCities={fetchCities}
+                  showAlert={showAlert}
+                />
+              }
+              size="lg"
+            />
+          )}
         </Grid>
       </form>
     </>
