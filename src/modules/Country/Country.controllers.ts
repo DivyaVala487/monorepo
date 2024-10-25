@@ -98,17 +98,27 @@ export const editCountry = async (req: Request, res: Response): Promise<any> => 
     try {
         let response: ResponseDto;
         const countryDetails: ICountryCreation = req.body;
-        const schema = Joi.object().keys({
-            country_id: Joi.number().required().label("country_id"),
-            name: Joi.string().optional().label("country_name"),
-        });
+        console.log(countryDetails, "countryDetails");
+        // const schema = Joi.object().keys({
+        //     country_id: Joi.number().required().label("country_id"),
+        //     name: Joi.string().optional().label("country_name"),
+        // });
+        const schema = Joi.object()
+            .options({})
+            .keys({
+                country_id: Joi.number().optional().label("country_id"),
+                name: Joi.string().optional().label("country_name"),
+            });
+
+        console.log(schema, "schema");
 
         const validateResult: ResponseDto = await schemaValidation(countryDetails, schema);
         if (!validateResult.status) {
             response = sendResponse(validateResult);
             return res.json(response);
         }
-        response = await CountryServices.editCountry(countryDetails);
+        const file = req.file;
+        response = await CountryServices.editCountry(countryDetails, file);
         response = sendResponse(response);
         return res.json(response);
     } catch (error) {

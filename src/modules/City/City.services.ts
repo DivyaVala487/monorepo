@@ -89,28 +89,24 @@ export const addCity = async (data: any): Promise<ResponseDto> => {
 };
 
 export const getAllCities = async (): Promise<ResponseDto> => {
-    let response: ResponseDto;
     try {
-
-        const FindAllCountriesWithStatesAndCities: any = await CountryModel.findAll({
+        const FindAllCountriesWithStatesAndCities = await CountryModel.findAll({
             include: [
                 {
                     model: StateModel,
                     as: "states",
-                    attributes: ["state_name", "short_name", "gst"],
+                    attributes: ["state_id", "state_name", "short_name", "gst"],
                     include: [
                         {
                             model: CityModel,
                             as: "cities1",
-                            attributes: ["city_name"],
+                            attributes: ["city_id", "city_name"],
                         },
                     ],
                 },
             ],
-            attributes: ["country_id", "name", "flag", "created_at", "updated_at"],
+            attributes: ["country_id", "name", "flag"],
         });
-
-
 
         if (FindAllCountriesWithStatesAndCities.length === 0) {
             return setErrorResponse({
@@ -119,50 +115,39 @@ export const getAllCities = async (): Promise<ResponseDto> => {
             });
         }
 
-        const transformedData = FindAllCountriesWithStatesAndCities.flatMap((country: {
-            states: {
-                state_name: any;
-                short_name: any;
-                gst: any;
-                cities1: { city_name: any }[];
-            }[];
-            country_id: any;
-            name: any;
-            flag: any;
-        }) => {
-            return country.states.flatMap((state: {
-                state_name: any;
-                short_name: any;
-                gst: any;
-                cities1: { city_name: any }[];
-            }) => {
-                return state.cities1.map((city: { city_name: any }) => ({
-                    country_id: country.country_id,
-                    country_name: country.name,
-                    country_flag: country.flag,
-                    state_name: state.state_name,
-                    state_short_name: state.short_name,
-                    state_gst: state.gst,
-                    city_name: city.city_name,
-                }));
+        const responseData = FindAllCountriesWithStatesAndCities.reduce((acc: any, country: any) => {
+            country.states.forEach((state: any) => {
+                state.cities1.forEach((city: any) => {
+                    acc.push({
+                        country_id: country.country_id,
+                        country_name: country.name,
+                        country_flag: country.flag,
+                        state_name: state.state_name,
+                        state_short_name: state.short_name,
+                        state_gst: state.gst,
+                        city_name: city.city_name,
+                        city_id: city.city_id
+                    });
+                });
             });
-        });
+            return acc;
+        }, []);
 
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("COUNTRIES_STATES_AND_CITIES_ARE_PRESENT"),
-            data: transformedData,
+            data: responseData,
         });
     } catch (error) {
-        const result: ResponseDto = setErrorResponse({
+        return setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
             error,
             details: error,
         });
-        return result;
     }
 };
+
 
 export const deleteCity = async (cityId: number): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();

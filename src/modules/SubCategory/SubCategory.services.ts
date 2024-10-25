@@ -105,36 +105,69 @@ export const addSubCategories = async (
 export const getAllSubCategories = async (): Promise<ResponseDto> => {
     let response: ResponseDto;
     try {
+
         const getAllSubCategories = await SubcategoryModel.findAll({
             include: [
                 {
                     model: CategoryModel,
                     as: "category",
-                    attributes: ["name", "icon"],
+                    attributes: ["category_id", "name", "icon"],
                 }
             ],
+            attributes: ["subcategory_id", "category_id", "sub_category_name", "icon"],
         });
-        if (getAllSubCategories.length === 0) {
+
+
+        const categoryMap: Record<string, any> = {};
+
+        getAllSubCategories.forEach((subcategory: any) => {
+            const categoryId = subcategory.category.category_id;
+            const categoryName = subcategory.category.name;
+            const categoryIcon = subcategory.category.icon;
+
+            if (!categoryMap[categoryId]) {
+                categoryMap[categoryId] = {
+                    category_id: categoryId,
+                    category_name: categoryName,
+                    category_icon: categoryIcon,
+                    subcategory: [],
+                };
+            }
+
+
+            categoryMap[categoryId].subcategory.push({
+                subcategory_id: subcategory.subcategory_id,
+                subcategory_name: subcategory.sub_category_name,
+                subcategory_icon: subcategory.icon,
+            });
+        });
+
+
+        const formattedResponse = Object.values(categoryMap);
+
+        if (formattedResponse.length === 0) {
             return setErrorResponse({
                 statusCode: 400,
                 message: getResponseMessage("SUBCATEGORIES_NOT_FOUND"),
             });
         }
+
         return setSuccessResponse({
             statusCode: 200,
             message: getResponseMessage("SUBCATEGORIES_FOUND"),
-            data: getAllSubCategories,
+            data: formattedResponse,
         });
     } catch (error) {
-        const result: ResponseDto = setErrorResponse({
+        return setErrorResponse({
             statusCode: 500,
             message: getResponseMessage("SOMETHING_WRONG"),
             error,
             details: error,
         });
-        return result;
     }
 };
+
+
 
 
 export const deleteSubCategory = async (categoryId: number, subCategoryId: number): Promise<ResponseDto> => {

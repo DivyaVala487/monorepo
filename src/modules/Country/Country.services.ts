@@ -171,7 +171,7 @@ export const deleteCountry = async (countryId: number): Promise<ResponseDto> => 
     }
 };
 
-export const editCountry = async (countryDetails: ICountryCreation): Promise<ResponseDto> => {
+export const editCountry = async (countryDetails: ICountryCreation, file: Express.Multer.File): Promise<ResponseDto> => {
     const transaction = await sequelize.transaction();
     let response: ResponseDto;
     try {
@@ -203,10 +203,14 @@ export const editCountry = async (countryDetails: ICountryCreation): Promise<Res
                 message: getResponseMessage("COUNTRY_NAME_EXISTS"),
             });
         }
+        const uploadResponse = await cloudinary.uploader.upload(file.path, {
+            folder: "uploads",
+            allowed_formats: ["jpg", "jpeg", "png"]
+        });
 
         const countryUpdate = await CountryModel.update(
             {
-                name
+                name, flag: uploadResponse.secure_url,
             },
             {
                 where: {
