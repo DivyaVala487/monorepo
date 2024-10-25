@@ -5,7 +5,6 @@ import ReuseableButton from "./ResusableButton";
 import validateForm from "../utils/validations";
 import { Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
-import DummyImage from "../assessts/images/image.png"; // Fixed the path typo
 import CustomCheckbox from "./ReusableCheckbox";
 import "./styles.css";
 import { Typography } from "@mui/joy";
@@ -24,7 +23,6 @@ const EditState = ({
   });
   const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState(false);
-  const [isDummy, setIsDummy] = useState(false);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.target;
@@ -39,8 +37,8 @@ const EditState = ({
 
     setErrors((prevErrors: any) => ({
       ...prevErrors,
-      countryData: {
-        ...prevErrors.countryData,
+      stateData: {
+        ...prevErrors.stateData,
         [field]: undefined,
       },
     }));
@@ -54,29 +52,14 @@ const EditState = ({
     });
   }, []);
 
-  console.log(data, "ineditcountrey");
-  const handleFileChange: any = (e: any) => {
-    const fileList = e.target.files[0];
-
-    setIsDummy(true);
-    handleChange(fileList, "icon");
-
-    console.log(fileList, "fileList");
-  };
-
   const handleSubmit = async (e: any) => {
-    console.log("incounteysubmit");
     e.preventDefault();
-    console.log(stateData, "CountryDataToSee");
     const stateDataErrors = validateForm(stateData);
-    console.log(stateDataErrors, "errors");
 
-    console.log(data, "data");
-
-    if (stateDataErrors.country) {
+    if (stateDataErrors.state || stateDataErrors.shortName) {
       setErrors((prevErrors: any) => ({
         ...prevErrors,
-        countryData: stateDataErrors,
+        stateData: stateDataErrors,
       }));
     } else {
       setLoading(true);
@@ -85,17 +68,10 @@ const EditState = ({
       formData.append("state_name", stateData.state);
       formData.append("gst", stateData.gst);
       formData.append("country_id", data.country_id);
-      formData.append("state_id",data.state_id);
-
-      console.log(formData, "formData");
+      formData.append("state_id", data.state_id);
 
       try {
-        const response: any = await Put(
-          networkUrls.editState,
-          formData,
-          false
-        );
-        console.log(response, "responseToSee");
+        const response: any = await Put(networkUrls.editState, formData, false);
         if (response?.response?.api_status === 200) {
           setAlertInfo({
             message: response?.response?.message,
@@ -115,7 +91,7 @@ const EditState = ({
       } catch (error) {
         console.log("Error updating country", error);
       } finally {
-        setLoading(false); // Ensure loading state resets after try/catch
+        setLoading(false);
       }
     }
   };
@@ -126,19 +102,15 @@ const EditState = ({
         <Grid xs={12} md={5}>
           <InputField
             type="text"
-            // placeholder="Enter State"
             size="sm"
             name="state"
             label="State Name"
             value={stateData.state}
             style={{ width: "100%", height: "36px" }}
             onChange={(e) => handleChange(e.target.value, "state")}
+            error={errors?.stateData?.state}
+            helperText={errors?.stateData?.state}
           />
-          {errors.countryData?.country && (
-            <p className="error-message" style={{ fontSize: "1rem" }}>
-              {errors.countryData.country}
-            </p>
-          )}
         </Grid>
         <Grid xs={12} md={5}>
           <InputField
@@ -149,29 +121,19 @@ const EditState = ({
             value={stateData.shortName}
             style={{ width: "100%", height: "36px", padding: "6px" }}
             onChange={(e) => handleChange(e.target.value, "shortName")}
+            error={errors?.stateData?.shortName}
+            helperText={errors.stateData?.shortName}
           />
-          {errors.countryData?.icon && (
-            <p className="error-message" style={{ fontSize: "1rem" }}>
-              {errors.countryData.icon}
-            </p>
-          )}
         </Grid>
         <Grid xs={12} md={5}>
-        <Typography component="label"  className="label-heading">
-          {"Is GST Required?"}
-        </Typography>
+          <Typography component="label" className="label-heading">
+            {"Is GST Required?"}
+          </Typography>
           <CustomCheckbox
             onChange={handleCheckboxChange}
-            // label="Gst"
             name="gst"
             checked={stateData.gst}
-            // onChange={(e) => handleChange(e.target.value, "gst")}
           />
-          {errors.countryData?.icon && (
-            <p className="error-message" style={{ fontSize: "1rem" }}>
-              {errors.countryData.icon}
-            </p>
-          )}
         </Grid>
         <Grid xs={12} md={12}>
           <ReuseableButton

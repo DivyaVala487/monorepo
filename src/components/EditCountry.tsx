@@ -5,7 +5,7 @@ import ReuseableButton from "./ResusableButton";
 import validateForm from "../utils/validations";
 import { Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
-import DummyImage from "../assessts/images/image.png"; // Fixed the path typo
+import DummyImage from "../assessts/images/image.png";
 
 const EditCountry = ({
   data,
@@ -41,25 +41,15 @@ const EditCountry = ({
     });
   }, []);
 
-  console.log(data, "ineditcountrey");
   const handleFileChange: any = (e: any) => {
     const fileList = e.target.files[0];
-
     setIsDummy(true);
     handleChange(fileList, "icon");
-
-    console.log(fileList, "fileList");
   };
 
-  const handleSubmit = async (e:any) => {
-    console.log("incounteysubmit");
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(countryData,"CountryDataToSee");
     const countryDataErrors = validateForm(countryData);
-    console.log(countryDataErrors,"errors")
-
-    console.log(data,"data");
-
     if (countryDataErrors.country) {
       setErrors((prevErrors: any) => ({
         ...prevErrors,
@@ -71,15 +61,12 @@ const EditCountry = ({
       formData.append("name", countryData.country);
       formData.append("image", countryData.icon);
       formData.append("country_id", data.country_id);
-      console.log(formData,"formData");
-
       try {
         const response: any = await Put(
           networkUrls.editCountry,
           formData,
           true
         );
-        console.log(response, "responseToSee");
         if (response?.response?.api_status === 200) {
           setAlertInfo({
             message: response?.response?.message,
@@ -99,7 +86,7 @@ const EditCountry = ({
       } catch (error) {
         console.log("Error updating country", error);
       } finally {
-        setLoading(false); // Ensure loading state resets after try/catch
+        setLoading(false);
       }
     }
   };
