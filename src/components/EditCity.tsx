@@ -4,18 +4,22 @@ import Dropdown from "./ResusableDropdown";
 import ReuseableButton from "./ResusableButton";
 import { Post, Get } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
+import { Grid } from "@mui/joy";
+import validateForm from "../utils/validations";
 
 interface EditCityProps {
   data: any;
-  onClose: () => void;
+  setEditOpenModal: any;
+  getCities: any;
   setAlertInfo: any;
   showAlert: any;
 }
 
 const EditCity: React.FC<EditCityProps> = ({
   data,
-  onClose,
   setAlertInfo,
+  setEditOpenModal,
+  getCities,
   showAlert,
 }) => {
   const [formValues, setFormValues] = useState({
@@ -32,6 +36,7 @@ const EditCity: React.FC<EditCityProps> = ({
   const [filterStates, setFilterStates] = useState<
     { label: string; value: number; country_id: number }[]
   >([]);
+  const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
     fetchCountries();
@@ -83,6 +88,14 @@ const EditCity: React.FC<EditCityProps> = ({
       }
       return updatedValues;
     });
+
+    setErrors((prevErrors: any) => ({
+      ...prevErrors,
+      formValues: {
+        ...prevErrors.formValues,
+        [fieldName]: undefined,
+      },
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,46 +105,77 @@ const EditCity: React.FC<EditCityProps> = ({
       state_id: formValues.state,
       city_name: formValues.city,
     };
-    try {
-      const response = await Post(
-        `${networkUrls.editCity}/${data.city_id}`,
-        updatedCity,
-        false
-      );
-      if (response?.data?.api_status === 200) {
-        onClose();
+
+    const validateCity = validateForm(formValues);
+    if (validateCity.city || validateCity.state || validateCity.country) {
+      console.log("hello");
+      setErrors((prevErrors: any) => ({
+        ...prevErrors,
+        formValues: validateCity,
+      }));
+    } else {
+      setFormValues({ country: "", state: "", city: "" });
+      setErrors((prevErrors: any) => ({
+        ...prevErrors,
+        formValues: {},
+      }));
+
+      try {
+        const response = await Post(
+          `${networkUrls.editCity}/${data.city_id}`,
+          updatedCity,
+          false
+        );
+        if (response?.data?.api_status === 200) {
+          // onClose();
+          setEditOpenModal(false);
+          getCities();
+          showAlert(true);
+          setAlertInfo({ message: response?.data?.message, isSuccess: true });
+        } else {
+          setAlertInfo({ message: response?.data?.message, isSuccess: false });
+        }
+      } catch (error) {
+        console.error("Error updating city", error);
       }
-    } catch (error) {
-      console.error("Error updating city", error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Dropdown
-        options={countries}
-        label="Country"
-        value={formValues.country}
-        onChange={(value) => handleChange(value, "country")}
-        defaultValue={formValues.country}
-        name="country"
-      />
-      <Dropdown
-        options={filterStates}
-        label="State"
-        value={formValues.state}
-        defaultValue={formValues.state}
-        onChange={(value) => handleChange(value, "state")}
-        name="state"
-      />
-      <InputField
-        label="City"
-        value={formValues.city}
-        name="city"
-        onChange={(value: any) => handleChange(value, "city")}
-      />
-
-      <ReuseableButton type="submit">Update City</ReuseableButton>
+      <Grid container spacing={2}>
+        <Grid xs={12} md={5}>
+          <Dropdown
+            options={countries}
+            label="Country"
+            value={formValues.country}
+            onChange={(value) => handleChange(value, "country")}
+            defaultValue={formValues.country}
+            name="country"
+          />
+        </Grid>
+        <Grid xs={12} md={5}>
+          <Dropdown
+            options={filterStates}
+            label="State"
+            value={formValues.state}
+            defaultValue={formValues.state}
+            onChange={(value) => handleChange(value, "state")}
+            name="state"
+          />
+        </Grid>
+        <Grid xs={12} md={5}>
+          <InputField
+            label="City"
+            value={formValues.city}
+            name="city"
+            onChange={(value: any) => handleChange(value, "city")}
+          />
+        </Grid>
+        <Grid xs={12} md={12}>
+          <ReuseableButton type="submit" variant="solid" title="Update" />
+        </Grid>
+      </Grid>
     </form>
   );
 };

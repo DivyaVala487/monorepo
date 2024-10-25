@@ -313,13 +313,14 @@ const City: React.FC = () => {
             <ReusableModal
               open={editOpenModal}
               setOpen={setEditOpenModal}
-              heading="Edit Category"
+              heading="Edit City"
               type="edit"
               component={
                 <EditCity
                   data={filterRows}
                   setAlertInfo={setAlertInfo}
-                  onClose={() => setEditOpenModal(false)}
+                  setEditOpenModal={setEditOpenModal}
+                  getCities={fetchCities}
                   showAlert={showAlert}
                 />
               }
