@@ -7,22 +7,32 @@ interface FormValues {
   subCategory?: string;
   category?: string;
   icon?: any;
-  categoryicon?:any;
-  countryicon?:any
+  categoryicon?: any;
+  countryicon?: any;
 }
 
 const validateForm = (formValues: FormValues): Record<string, string> => {
-  const { country, state, city, shortName, gst, category, icon, subCategory,categoryicon,countryicon } =
-    formValues;
+  const {
+    country,
+    state,
+    city,
+    shortName,
+    gst,
+    category,
+    icon,
+    subCategory,
+    categoryicon,
+    countryicon,
+  } = formValues;
   console.log(formValues, "shh");
   const obj: Record<string, string> = {};
-  if (country === "" || country===null) {
+  if (country === "" || country === null) {
     obj["country"] = "Country is Required";
   }
-  if (state===null || state==="") {
+  if (state === null || state === "") {
     obj["state"] = "State is Required";
   }
-  if (city==="" || city===null) {
+  if (city === "" || city === null) {
     obj["city"] = "City is Required";
   }
   if (shortName === "") {
@@ -31,14 +41,14 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
   // if (gst === false) {
   //   obj["gst"] = "Required Field";
   // }
-  if (category ==="" ) {
+  if (category === "") {
     obj["category"] = "Category name is required";
   }
-  if (categoryicon===null) {
+  if (categoryicon === "") {
     obj["categoryicon"] = "Category icon is required";
   }
 
-  if (countryicon===null || countryicon==="") {
+  if (countryicon === null || countryicon === "") {
     obj["countryicon"] = "Country icon is required";
   }
 
@@ -48,12 +58,12 @@ const validateForm = (formValues: FormValues): Record<string, string> => {
 
   if (!icon) {
     obj["icon"] = "Sub-Category Icon is required.";
-  } 
+  }
   // else if (!isValidFileType(icon)) {
   //   obj["icon"] = "Invalid file type. Please upload an image.";
   // }
 
-  console.log(obj,"obj")
+  console.log(obj, "obj");
 
   return obj;
 };
