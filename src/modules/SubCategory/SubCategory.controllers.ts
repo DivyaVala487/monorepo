@@ -11,6 +11,7 @@ import { ICityCreation } from "@dtos/city.dtos";
 import { v2 as cloudinary } from "cloudinary";
 import { ICategoryCreation } from "@dtos/category.dtos";
 import { ISubcategoryCreation } from "@dtos/subcategory.dto";
+import { Json } from "sequelize/types/utils";
 
 
 cloudinary.config({
@@ -156,5 +157,143 @@ export const editSubCategory = async (req: Request, res: Response): Promise<any>
         });
         result = sendResponse(result);
         return res.json(result);
+    }
+};
+
+
+export const editMultipleSubCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+        const subcategories: any[] = JSON.parse(req.body.subcategories)
+            ? req.body.subcategories
+            : [req.body.subcategories];
+
+        console.log(subcategories, "subcategories");
+
+        const files: Express.Multer.File[] = Array.isArray(req.files)
+            ? (req.files as Express.Multer.File[])
+            : req.files ? [req.files as unknown as Express.Multer.File] : [];
+
+        console.log(files, "files");
+
+        const categoryDetails: any = req.body;
+
+        const schema = Joi.object({
+            category_id: Joi.number().required().label("Category ID"),
+            subcategories: Joi.array().items(Joi.object({
+                sub_category_name: Joi.string().required().label("Subcategory Name"),
+                subcategory_id: Joi.string().required().label("Subcategory Id")
+            })).optional().label("Subcategories")
+        });
+        console.log(categoryDetails, "categoryDetails");
+        const validateResult: ResponseDto = await schemaValidation(categoryDetails, schema);
+        console.log(validateResult, "validateResult");
+        if (!validateResult.status) {
+            response = sendResponse(validateResult);
+            return res.json(response);
+        }
+
+
+        const subCategoryDetailsArray = subcategories.map((subCategory, index: number) => {
+            const iconFile = files[index] || null;
+
+            return {
+                subcategory_id: subCategory.sub_category_id,
+                sub_category_name: subCategory.sub_category_name,
+                icon: iconFile,
+                category_id: categoryDetails.category_id
+            };
+        });
+
+
+        const validSubCategories = subCategoryDetailsArray.filter(subCat =>
+            subCat.sub_category_name && (subCat.icon || subCat.icon === null)
+        );
+
+        console.log(validSubCategories, "validSubCategories");
+
+        const serviceResponse = await SubCatService.editSubCategories(validSubCategories);
+        return res.json(sendResponse(serviceResponse));
+
+    } catch (error) {
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return res.json(sendResponse(result));
+    }
+};
+
+
+export const editingSubCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+        let response: ResponseDto;
+
+        const subcategories: { sub_category_name: string; subcategory_id: number }[] = Array.isArray(req.body.subcategories)
+            ? req.body.subcategories
+            : [req.body.subcategories];
+
+
+        const files: Express.Multer.File[] = Array.isArray(req.files)
+            ? (req.files as Express.Multer.File[])
+            : req.files ? [req.files as unknown as Express.Multer.File] : [];
+
+        const categoryDetails: any = req.body;
+
+        console.log(categoryDetails, "categoryDetails");
+
+
+        const schema = Joi.object({
+            category_id: Joi.number().required().label("Category ID"),
+            subcategories: Joi.array().items(
+                Joi.object({
+                    sub_category_name: Joi.string().required().label("Subcategory Name"),
+                    subcategory_id: Joi.number().required().label("Subcategory ID")
+                })
+            ).required().label("Subcategories")
+        });
+
+        categoryDetails.subcategories = subcategories;
+
+
+        const validateResult: ResponseDto = await schemaValidation(categoryDetails, schema);
+        if (!validateResult.status) {
+            response = sendResponse(validateResult);
+            return res.json(response);
+        }
+
+
+        const normalizedFiles = Array.isArray(files) ? files : (files ? [files] : []);
+        if (normalizedFiles.length !== subcategories.length) {
+            return res.json(setErrorResponse({
+                statusCode: 400,
+                message: getResponseMessage("FILES_MISMATCH"),
+            }));
+        }
+
+
+        const subCategoryDetailsArray = subcategories.map((subCategory, index: number) => ({
+            sub_category_name: subCategory.sub_category_name,
+            icon: normalizedFiles[index],
+            category_id: categoryDetails.category_id,
+            subcategory_id: subCategory.subcategory_id
+        }));
+
+        console.log(subCategoryDetailsArray, "subCategoryDetailsArray");
+
+
+        const serviceResponse = await SubCatService.editingSubCategory(subCategoryDetailsArray);
+        return res.json(sendResponse(serviceResponse));
+
+    } catch (error) {
+        const result: ResponseDto = setErrorResponse({
+            statusCode: 500,
+            message: getResponseMessage("SOMETHING_WRONG"),
+            error,
+            details: error,
+        });
+        return res.json(sendResponse(result));
     }
 };

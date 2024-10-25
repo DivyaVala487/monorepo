@@ -181,6 +181,7 @@ export const editCountry = async (countryDetails: ICountryCreation, file: Expres
             where: { country_id },
         });
 
+
         if (!existingCountry) {
             await transaction.rollback();
             return setErrorResponse({
@@ -189,28 +190,20 @@ export const editCountry = async (countryDetails: ICountryCreation, file: Expres
             });
         }
 
-        const duplicateCountry: any = await CountryModel.findOne({
-            where: {
-                name
-            }
 
-        });
+        let flagUrl = "";
+        if (file) {
 
-        if (duplicateCountry) {
-            await transaction.rollback();
-            return setErrorResponse({
-                statusCode: 400,
-                message: getResponseMessage("COUNTRY_NAME_EXISTS"),
+            const uploadResponse = await cloudinary.uploader.upload(file.path, {
+                folder: "uploads",
+                allowed_formats: ["jpg", "jpeg", "png"]
             });
+            flagUrl = uploadResponse.secure_url;
         }
-        const uploadResponse = await cloudinary.uploader.upload(file.path, {
-            folder: "uploads",
-            allowed_formats: ["jpg", "jpeg", "png"]
-        });
 
         const countryUpdate = await CountryModel.update(
             {
-                name, flag: uploadResponse.secure_url,
+                name, flag: flagUrl,
             },
             {
                 where: {

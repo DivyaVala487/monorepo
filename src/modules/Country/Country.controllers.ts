@@ -96,6 +96,7 @@ export const deleteCountry = async (req: Request, res: Response): Promise<any> =
 
 export const editCountry = async (req: Request, res: Response): Promise<any> => {
     try {
+        console.log("edit Country");
         let response: ResponseDto;
         const countryDetails: ICountryCreation = req.body;
         console.log(countryDetails, "countryDetails");
