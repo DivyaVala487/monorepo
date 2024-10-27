@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
+import { colors } from "../../utils/constants";
 const Country: React.FC = () => {
   const [formValues, setFormValues] = useState<any>({
     country: "",
@@ -143,12 +144,12 @@ const Country: React.FC = () => {
                 ? "Country Added Successfully"
                 : "Country Submission Failed"
             }
-            backgroundColor={submissionSuccess ? "green" : "red"}
+            backgroundColor={submissionSuccess ? colors.success : colors.error}
             icon={
               submissionSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             textColor="light"
@@ -214,7 +215,7 @@ const Country: React.FC = () => {
               title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5", marginTop: "30px" }}
+              styles={{ backgroundColor:colors.primary, marginTop: "30px" }}
             />
           </Grid>
           <ReusableDataGrid

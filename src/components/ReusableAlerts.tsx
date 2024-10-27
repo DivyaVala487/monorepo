@@ -120,7 +120,7 @@ const Alerts: React.FC<AlertProps> = ({
         alignItems: "center",
       }}
     >
-      {icon && <span style={{ paddingTop: "8px" }}>{icon}</span>}
+      {icon && <span style={{ paddingTop: "8px",paddingRight:"5px" }}>{icon}</span>}
       <span style={{ color: "white" }}>{message}</span>
       {showCloseButton && (
         <button

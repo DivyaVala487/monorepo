@@ -4,3 +4,17 @@
     padding-top: 4px;
 }
 
+.subcategory-btn{
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-bottom: 0px;
+}
+
+@media  (max-width:767px) {
+    .subcategory-btn{
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+    
+}

@@ -15,6 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReusableModal from "../../components/ReusableModal";
 import EditCategory from "../../components/EditCategory";
 import DeleteCategory from "../../components/DeleteCategory";
+import { colors } from "../../utils/constants";
 const Category = () => {
   const [formValues, setFormValues] = useState<any>({
     category: "",
@@ -176,9 +177,9 @@ const Category = () => {
             duration={2000}
             icon={
               submissionSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             borderRadius="8px"
@@ -235,10 +236,10 @@ const Category = () => {
           <Grid xs={12} md={12}>
             <ReuseableButton
               variant="solid"
-              title="Submit"
+              title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5" }}
+              styles={{ backgroundColor: colors.primary }}
             />
           </Grid>
           <ReusableDataGrid

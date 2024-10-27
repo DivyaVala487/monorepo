@@ -11,7 +11,7 @@ import validateForm from "../../utils/validations";
 import { Get, Post } from "../../services/apiServices";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import Alerts from "../../components/ReusableAlerts";
-
+import { colors } from "../../utils/constants";
 const States: React.FC = () => {
   const [formValues, setFormValues] = useState({
     country: "",
@@ -188,14 +188,14 @@ const States: React.FC = () => {
             message={
               alertInfo.isSuccess ? alertInfo.message : alertInfo.message
             }
-            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
+            backgroundColor={alertInfo.isSuccess ? colors.success : colors.error}
             textColor="light"
             duration={2000}
             icon={
               alertInfo.isSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             borderRadius="8px"
@@ -277,10 +277,10 @@ const States: React.FC = () => {
             <ReuseableButton
               variant="solid"
               size="sm"
-              title="Submit"
+              title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5" }}
+              styles={{ backgroundColor: colors.primary }}
             />
           </Grid>
           <ReusableDataGrid
