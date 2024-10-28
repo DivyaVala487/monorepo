@@ -19,7 +19,7 @@ interface ReusableDataGridProps {
   loading?: boolean;
   autoHeight?: boolean;
   pagination?: true;
-  sx?:any;
+  sx?: any;
   onRowSelectionModelChange?: (selectionModel: GridRowSelectionModel) => void;
 }
 
@@ -70,8 +70,13 @@ const ReusableDataGrid: React.FC<ReusableDataGridProps> = ({
         onRowSelectionModelChange={onRowSelectionModelChange}
         sx={{
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "blue",
+            backgroundColor: "#735DA5 !important",
+            color: "white",
           },
+          "& .MuiDataGrid-columnHeaders .MuiDataGrid-columnHeader": {
+            backgroundColor: "#735DA5 !important",
+          },
+          ...sx,
         }}
         {...restProps}
       />
