@@ -203,43 +203,44 @@ const Category = () => {
         )}
         <Grid
           container
-          sx={{ margin: 0, display: "flex", gap: 4, padding: "2rem" }}
+          className="category-container"
         >
-          <Grid xs={12} md={3}>
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="text"
               placeholder="Enter Category name"
               size="sm"
               name="category"
               label="Category"
-              style={{ width: "333px", height: "36px" }}
+              style={{ height: "36px" }}
               value={formValues.category}
               onChange={(e) => handleChange(e.target.value, "category")}
               error={errors.category}
               helperText={errors.category}
             />
           </Grid>
-          <Grid xs={12} md={3}>
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="file"
               placeholder=""
               label="Category Icon"
               name="categoryicon"
               size="sm"
-              style={{ width: "333px", height: "36px", padding: "6px" }}
+              style={{  height: "36px", padding: "6px" }}
               // value={formValues.categoryicon}
               onChange={handleFileChange}
               error={errors.categoryicon}
               helperText={errors.categoryicon}
             />
           </Grid>
-          <Grid xs={12} md={12}>
+          <Grid xs={12} md={3} lg={3} sm={3}>
             <ReuseableButton
               variant="solid"
               title="Add"
               type="submit"
               loading={loading}
               styles={{ backgroundColor: colors.primary }}
+              className="country-btn"
             />
           </Grid>
           <ReusableDataGrid

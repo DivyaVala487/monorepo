@@ -39,3 +39,10 @@
     }
 }
 
+.category-container{
+    display: flex;
+    margin: 0 !important;
+    gap: 20px;
+    padding:  2.5rem 2rem 2rem 2.5rem;
+}
+

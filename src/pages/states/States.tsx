@@ -11,6 +11,12 @@ import validateForm from "../../utils/validations";
 import { Get, Post } from "../../services/apiServices";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import Alerts from "../../components/ReusableAlerts";
+import ReusableModal from "../../components/ReusableModal";
+import DeleteState from "../../components/DeleteState";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditState from "../../components/EditState";
+
 import { colors } from "../../utils/constants";
 const States: React.FC = () => {
   const [formValues, setFormValues] = useState({
@@ -33,12 +39,17 @@ const States: React.FC = () => {
     null
   );
   const [alert, showAlert] = useState<any>(false);
-  const[alertInfo,setAlertInfo]=useState({message:"",isSuccess:false})
+  const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
   const [loading, setLoading] = useState(false);
   const [countries, setCountries] = useState<
     { label: string; value: string }[]
   >([]);
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
+  const [editOpenModal, setEditOpenModal] = useState(false);
+  // const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
+  const [filterRows, setFilterRows] = useState([]);
+  const [deleteOpenModal, setOpenDeleteModal] = useState(false);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -49,6 +60,7 @@ const States: React.FC = () => {
           value: country.country_id,
         }));
         setCountries(countryOptions);
+        console.log(countryOptions,"countryOptions");
       } catch (error) {
         console.error("Error fetching countries", error);
       }
@@ -69,14 +81,17 @@ const States: React.FC = () => {
           shortName: state.short_name,
           state: state.state_name,
           gst: state.gst,
+          state_id:state.state_id,
+          country_id:state.country_id
         })
       );
       setRows(fetchedStates);
+      console.log(fetchedStates,"fetchedStates");
+      console.log(rows, "reows");
     } catch (error) {
       console.error("Error fetching states", error);
     }
   };
-
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -99,31 +114,29 @@ const States: React.FC = () => {
         gst: formValues.gst,
       };
       try {
-        const response:any = await Post(networkUrls.addState, newState, false);
+        const response: any = await Post(networkUrls.addState, newState, false);
         if (response?.data?.api_status === 200) {
-          console.log(response.data.message,"response")
+          console.log(response.data.message, "response");
           showAlert(true);
-          setLoading(false)
+          setLoading(false);
           setAlertInfo({
-            message:response?.data?.message,
-            isSuccess:true
-          })
+            message: response?.data?.message,
+            isSuccess: true,
+          });
           console.log("API response:", response);
           setFormValues({ country: "", shortName: "", state: "", gst: false });
           fetchStates();
-
         } else {
           showAlert(true);
-          setLoading(false)
+          setLoading(false);
           setAlertInfo({
-            message:response?.data?.message,
-            isSuccess:false
-          })
-          
+            message: response?.data?.message,
+            isSuccess: false,
+          });
         }
       } catch (error) {
         console.error("Error adding state", error);
-        setLoading(false)
+        setLoading(false);
       }
     } else {
       console.log("Validation errors:", validationErrors);
@@ -147,17 +160,17 @@ const States: React.FC = () => {
   };
 
   const handleCountryChange = (value: string | undefined) => {
-    const countryId = value ? parseInt(value) : null; 
+    const countryId = value ? parseInt(value) : null;
     setSelectedCountry(countryId);
 
     setFormValues((prevValues) => ({
       ...prevValues,
-      country: value || "", 
+      country: value || "",
     }));
 
     setErrors((prevErrors: any) => ({
       ...prevErrors,
-      country: undefined, 
+      country: undefined,
     }));
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,9 +189,40 @@ const States: React.FC = () => {
       flex: 1,
       renderCell: (params) => (params.value ? "Yes" : "No"),
     },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            sx={{ cursor: "pointer", color: "#735DA5", marginRight: "10px" }}
+            onClick={() => handleEdit(params.row)}
+          />
+          <DeleteIcon
+            sx={{ cursor: "pointer", color: "#735DA5" }}
+            onClick={() => handleDelete(params.row)}
+          />
+        </>
+      ),
+    },
   ];
 
-  console.log(alertInfo,"alertinfo")
+  const handleEdit = (row: any) => {
+    console.log("Editing row:", row);
+    setEditOpenModal(true);
+    setFilterRows(row);
+  };
+
+  const handleDelete = async (row: any) => {
+    console.log("Deleting", row);
+    setOpenDeleteModal(true);
+    setFilterRows(row);
+    console.log(filterRows, "filterrows");
+  };
+
+  console.log(alertInfo, "alertinfo");
 
   return (
     <>
@@ -217,7 +261,11 @@ const States: React.FC = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={2} sx={{ flexGrow: 1, margin: 0,padding:"2rem" }}>
+        <Grid
+          container
+          spacing={2}
+          sx={{ flexGrow: 1, margin: 0, padding: "2rem" }}
+        >
           <Grid xs={12} md={4}>
             <Dropdown
               options={countries}
@@ -284,17 +332,54 @@ const States: React.FC = () => {
             />
           </Grid>
           <ReusableDataGrid
-        rows={rows}
-        columns={columns}
-        initialPageSize={5}
-        pageSizeOptions={[5, 10, 20]}
-        checkboxSelection={false}
-        disableRowSelectionOnClick={true}
-        sx={{marginLeft:"9px",width:"95%"}}
-      />
+            rows={rows}
+            columns={columns}
+            initialPageSize={5}
+            pageSizeOptions={[5, 10, 20]}
+            checkboxSelection={false}
+            disableRowSelectionOnClick={true}
+            sx={{ marginLeft: "9px", width: "95%" }}
+          />
         </Grid>
       </form>
-      
+      {editOpenModal && (
+        <ReusableModal
+          open={editOpenModal}
+          setOpen={setEditOpenModal}
+          heading="Edit Category"
+          type="edit"
+          component={
+            <EditState
+              data={filterRows}
+              setAlertInfo={setAlertInfo}
+              setEditOpenModal={setEditOpenModal}
+              showAlert={showAlert}
+              fetchStates={fetchStates}
+            />
+          }
+          size="lg"
+        />
+      )}
+      {deleteOpenModal && (
+        <ReusableModal
+          open={deleteOpenModal}
+          setOpen={setOpenDeleteModal}
+          type="delete"
+          component={
+            <DeleteState
+              data={filterRows}
+              setOpenDeleteModal={setOpenDeleteModal}
+              showAlert={showAlert}
+              fetchStates={fetchStates}
+              setAlertInfo={setAlertInfo}
+            />
+          }
+          heading="Are you sure want to delete?"
+          buttonText="Delete"
+          size="lg"
+          style={{ width: 500 }}
+        />
+      )}
     </>
   );
 };

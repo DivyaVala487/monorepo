@@ -3,25 +3,27 @@ import ReuseableButton from "./ResusableButton";
 import { Delete } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
 
-const DeleteSubCategory = ({
+const DeleteState = ({
   data,
   setOpenDeleteModal,
   showAlert,
-  getCountries,
+  fetchStates,
   setAlertInfo,
 }: any) => {
-  const { subcategoryId, categoryId } = data;
+//   const { countryId } = data;
+ 
 
   const handleDelete = async () => {
     try {
       const response = await Delete(
-        `${networkUrls.deleteSubCategory}/${categoryId}/${subcategoryId}`,
+        `${networkUrls.deleteState}/${data.country_id}/${data.state_id}`,
         false
       );
       if (response?.data?.api_status === 200) {
         setOpenDeleteModal(false);
+        console.log(response?.data?.message , "message");
 
-        getCountries();
+        fetchStates();
         showAlert(true);
         setAlertInfo({
           message: response?.data?.message,
@@ -35,7 +37,7 @@ const DeleteSubCategory = ({
         });
       }
     } catch (error) {
-      console.log("Error while deleting country", error);
+      console.log("Error while deleting sub category", error);
     }
   };
 
@@ -51,4 +53,4 @@ const DeleteSubCategory = ({
   );
 };
 
-export default DeleteSubCategory;
+export default DeleteState;

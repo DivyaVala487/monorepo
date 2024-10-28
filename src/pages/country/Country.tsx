@@ -12,6 +12,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
+import ReusableModal from "../../components/ReusableModal";
+import EditSubCategory from "../../components/EditSubCategory";
+import DeleteSubCategory from "../../components/DeleteSubCategory";
+import EditCountry from "../../components/EditCountry";
+import DeleteCountry from "../../components/DeleteCountry";
 import { colors } from "../../utils/constants";
 import "../styles.css"
 const Country: React.FC = () => {
@@ -20,9 +25,14 @@ const Country: React.FC = () => {
     countryicon: null,
   });
   const [errors, setErrors] = useState<any>({});
+  const [editOpenModal, setEditOpenModal] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
+  const [filterRows, setFilterRows] = useState([]);
+  const [deleteOpenModal, setOpenDeleteModal] = useState(false);
   const [alert, showAlert] = useState<any>(false);
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<{ id: number; country: string }[]>([]);
+  const [data, setData] = useState([]);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
@@ -41,14 +51,37 @@ const Country: React.FC = () => {
         />
       ),
     },
+     {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            sx={{ cursor: "pointer", color: "#735DA5", marginRight: "10px" }}
+            onClick={() => handleEdit(params.row)}
+          />
+          <DeleteIcon
+            sx={{ cursor: "pointer", color: "#735DA5" }}
+            onClick={() => handleDelete(params.row)}
+          />
+        </>
+      ),
+    },
   ];
 
   const handleEdit = (row: any) => {
     console.log("Editing row:", row);
+    setEditOpenModal(true);
+    setFilterRows(row);
   };
 
-  const handleDelete = async (id: number) => {
-    console.log("Deleting row with ID:", id);
+  const handleDelete = async (row: any) => {
+    console.log("Deleting row with ID:", row);
+    setOpenDeleteModal(true);
+    setFilterRows(row);
+    console.log(filterRows,"filterrows");
   };
 
   const fetchCountries = async () => {
@@ -61,6 +94,7 @@ const Country: React.FC = () => {
             id: index + 1,
             country: country.name,
             countryicon: country.flag,
+            country_id: country.country_id
           })
         );
         setRows(fetchedCountries);
@@ -101,10 +135,18 @@ const Country: React.FC = () => {
           setLoading(false);
 
           setSubmissionSuccess(true);
+          setAlertInfo({
+            message: response?.data?.message,
+            isSuccess: true,
+          });
         } else {
           setSubmissionSuccess(false);
           showAlert(true);
           setLoading(false);
+          setAlertInfo({
+            message: response?.data?.message,
+            isSuccess: false,
+          });
         }
       } catch (error) {
         console.error("Error adding country:", error);
@@ -138,16 +180,12 @@ const Country: React.FC = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        {alert && (
+      {alert && (
           <Alerts
-            message={
-              submissionSuccess
-                ? "Country Added Successfully"
-                : "Country Submission Failed"
-            }
-            backgroundColor={submissionSuccess ? colors.success : colors.error}
+          message={alertInfo.isSuccess ? alertInfo.message : alertInfo.message}
+            backgroundColor={alertInfo.isSuccess ? colors.success : colors.error}
             icon={
-              submissionSuccess ? (
+              alertInfo.isSuccess ? (
                 <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
                 <Cancel style={{ color: colors.white, fontSize: "24px" }} />
@@ -231,6 +269,53 @@ const Country: React.FC = () => {
           />
         </Grid>
       </form>
+      {/* <ReusableDataGrid
+        rows={data}
+        columns={columns}
+        initialPageSize={5}
+        pageSizeOptions={[5, 10, 20]}
+        checkboxSelection={false}
+        disableRowSelectionOnClick={true}
+        sx={{width:"90%",marginLeft:"40px"}}
+      /> */}
+        {editOpenModal && (
+          <ReusableModal
+            open={editOpenModal}
+            setOpen={setEditOpenModal}
+            heading="Edit Country"
+            type="edit"
+            component={
+              <EditCountry
+                data={filterRows}
+                setAlertInfo={setAlertInfo}
+                setEditOpenModal={setEditOpenModal}
+                showAlert={showAlert}
+                fetchCountries={fetchCountries}
+              />
+            }
+            size="lg"
+          />
+        )}
+        {deleteOpenModal && (
+          <ReusableModal
+            open={deleteOpenModal}
+            setOpen={setOpenDeleteModal}
+            type="delete"
+            component={
+              <DeleteCountry
+                data={filterRows}
+                setOpenDeleteModal={setOpenDeleteModal}
+                showAlert={showAlert}
+                fetchCountries={fetchCountries}
+                setAlertInfo={setAlertInfo}
+              />
+            }
+            heading="Are you sure want to delete?"
+            buttonText="Delete"
+            size="lg"
+            style={{ width: 500 }}
+          />
+        )}
     </>
   );
 };

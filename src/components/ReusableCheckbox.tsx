@@ -64,6 +64,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
 }) => {
   console.log(checked, "checked in");
   return (
+    
     <FormControl size="sm" sx={{ width: 400 }}>
       <Checkbox
         id={id}
@@ -90,6 +91,7 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
         </FormHelperText>
       )}
     </FormControl>
+    
   );
 };
 

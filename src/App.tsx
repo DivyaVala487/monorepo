@@ -8,9 +8,8 @@ import Footer from "./components/ReusableFooter";
 import logo from "../src/assessts/images/ABSYZ.png"
 import Category from "./pages/Category/Category";
 import SubCategory from "./pages/SubCategory/SubCategory";
-import Country from "./pages/Country/Country";
-import States from "./pages/States/States";
-
+import Country from "./pages/country/Country";
+import States from "./pages/states/States";
 const theme = {
   colors: {
     primary: "#0070f3",
