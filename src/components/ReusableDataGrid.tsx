@@ -68,6 +68,11 @@ const ReusableDataGrid: React.FC<ReusableDataGridProps> = ({
         autoHeight={autoHeight}
         pagination={pagination}
         onRowSelectionModelChange={onRowSelectionModelChange}
+        sx={{
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "blue",
+          },
+        }}
         {...restProps}
       />
     </Box>

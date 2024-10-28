@@ -16,6 +16,7 @@ import ReusableModal from "../../components/ReusableModal";
 import DeleteCity from "../../components/DeleteCity";
 import EditCity from "../../components/EditCity";
 
+import { colors } from "../../utils/constants";
 const City: React.FC = () => {
   const [formValues, setFormValues] = useState({
     country: "",
@@ -70,6 +71,7 @@ const City: React.FC = () => {
           city: city.city_name,
           city_id: city.city_id,
           country_id: city.country_id,
+          state_id:city.state_id
         })
       );
       setRows(fetchedCities);
@@ -201,14 +203,14 @@ const City: React.FC = () => {
             message={
               alertInfo.isSuccess ? alertInfo.message : alertInfo.message
             }
-            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
+            backgroundColor={alertInfo.isSuccess ? colors.success : colors.error}
             textColor="light"
             duration={2000}
             icon={
               alertInfo.isSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             borderRadius="8px"
@@ -274,10 +276,10 @@ const City: React.FC = () => {
             <ReuseableButton
               variant="solid"
               size="sm"
-              title="Submit"
+              title="Add"
               type="submit"
               loading={loading}
-              styles={{ marginTop: "30px", backgroundColor: "#735DA5" }}
+              styles={{ marginTop: "30px", backgroundColor: colors.primary}}
             />
           </Grid>
           <ReusableDataGrid
@@ -309,7 +311,10 @@ const City: React.FC = () => {
               style={{ width: 500 }}
             />
           )}
-          {editOpenModal && (
+         
+        </Grid>
+      </form>
+      {editOpenModal && (
             <ReusableModal
               open={editOpenModal}
               setOpen={setEditOpenModal}
@@ -327,8 +332,6 @@ const City: React.FC = () => {
               size="lg"
             />
           )}
-        </Grid>
-      </form>
     </>
   );
 };

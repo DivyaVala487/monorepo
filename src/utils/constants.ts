@@ -73,3 +73,6 @@ export const navLinks = [
   export const email = "marketing@absyz.com";
   export const phone = "+917997966174";
   export const copyrightText = "© 2024 ABSYZ Inc. All Rights Reserved.";
+
+
+  export const colors={primary:"#735DA5",success:"green",error:"red",white:"white"}

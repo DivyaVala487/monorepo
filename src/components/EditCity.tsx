@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputField from "./ReusableTextField";
 import Dropdown from "./ResusableDropdown";
 import ReuseableButton from "./ResusableButton";
-import { Post, Get } from "../services/apiServices";
+import { Post, Get, Put } from "../services/apiServices";
 import { networkUrls } from "../services/networkrls";
 import { Grid } from "@mui/joy";
 import validateForm from "../utils/validations";
@@ -60,6 +60,8 @@ const EditCity: React.FC<EditCityProps> = ({
     }
   };
 
+  console.log(data,"formvalues")
+
   const fetchStates = async () => {
     try {
       const response = await Get(networkUrls.getAllStates, false);
@@ -77,6 +79,8 @@ const EditCity: React.FC<EditCityProps> = ({
   };
 
   const handleChange = (value: string, fieldName: string) => {
+    if(value===null) return;
+    console.log(value,"value");
     setFormValues((prevValues) => {
       const updatedValues = { ...prevValues, [fieldName]: value };
       if (fieldName === "country") {
@@ -104,6 +108,7 @@ const EditCity: React.FC<EditCityProps> = ({
       country_id: formValues.country,
       state_id: formValues.state,
       city_name: formValues.city,
+      city_id:data.city_id
     };
 
     const validateCity = validateForm(formValues);
@@ -121,25 +126,28 @@ const EditCity: React.FC<EditCityProps> = ({
       }));
 
       try {
-        const response = await Post(
-          `${networkUrls.editCity}/${data.city_id}`,
+        const response = await Put(
+          `${networkUrls.editCity}`,
           updatedCity,
           false
         );
-        if (response?.data?.api_status === 200) {
+        if (response?.response?.api_status === 200) {
           // onClose();
           setEditOpenModal(false);
           getCities();
           showAlert(true);
-          setAlertInfo({ message: response?.data?.message, isSuccess: true });
+          setAlertInfo({ message: response?.response?.message, isSuccess: true });
         } else {
-          setAlertInfo({ message: response?.data?.message, isSuccess: false });
+          setAlertInfo({ message: response?.response?.message, isSuccess: false });
         }
       } catch (error) {
         console.error("Error updating city", error);
+        setEditOpenModal(false);
+        setAlertInfo({ message: "End point is wrong please check", isSuccess: false });
       }
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit}>
@@ -152,6 +160,9 @@ const EditCity: React.FC<EditCityProps> = ({
             onChange={(value) => handleChange(value, "country")}
             defaultValue={formValues.country}
             name="country"
+            disabled={true}
+            error={errors?.formValues?.country}
+            helperText={errors?.formValues?.country}
           />
         </Grid>
         <Grid xs={12} md={5}>
@@ -159,9 +170,12 @@ const EditCity: React.FC<EditCityProps> = ({
             options={filterStates}
             label="State"
             value={formValues.state}
+          disabled={true}
             defaultValue={formValues.state}
             onChange={(value) => handleChange(value, "state")}
             name="state"
+            error={errors?.formValues?.state}
+            helperText={errors?.formValues?.state}
           />
         </Grid>
         <Grid xs={12} md={5}>
@@ -169,7 +183,9 @@ const EditCity: React.FC<EditCityProps> = ({
             label="City"
             value={formValues.city}
             name="city"
-            onChange={(value: any) => handleChange(value, "city")}
+            onChange={(e: any) => handleChange(e.target.value, "city")}
+            error={errors?.formValues?.city}
+            helperText={errors?.formValues?.city}
           />
         </Grid>
         <Grid xs={12} md={12}>

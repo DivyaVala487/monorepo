@@ -2,6 +2,7 @@ import * as React from "react";
 import Select, { selectClasses } from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { Typography } from "@mui/joy";
+import { colors } from "../utils/constants";
 
 interface SelectIndicatorProps {
   options: Array<{ label: string; value: string | number }>;
@@ -16,6 +17,8 @@ interface SelectIndicatorProps {
   error?: boolean;
   helperText?: string;
   defaultValue?: string;
+  disabled?:boolean
+  
 }
 
 const Dropdown: React.FC<SelectIndicatorProps> = ({
@@ -31,6 +34,7 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
   error,
   helperText,
   defaultValue,
+  disabled
 }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
@@ -41,14 +45,14 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
         </Typography>
       )}
       <Select
-        defaultValue={defaultValue}
         value={value}
         name={name}
-        placeholder={placeholder}
         onClose={onClose}
+        disabled={disabled}
         onChange={(event, newValue) => onChange && onChange(newValue as string)}
         sx={{
           width,
+          color: value ? "black" : colors.primary, 
           [`& .${selectClasses.indicator}`]: {
             transition: "0.2s",
             [`&.${selectClasses.expanded}`]: {
@@ -57,20 +61,17 @@ const Dropdown: React.FC<SelectIndicatorProps> = ({
           },
         }}
       >
+        <Option value="" disabled style={{ color: colors.primary }}>
+          {placeholder}
+        </Option>
         {options.map((option) => (
           <Option key={option.value} value={option.value}>
             {option.label}
           </Option>
         ))}
       </Select>
-      {error && (
-        <>
-          {helperText && (
-            <Typography color={error ? "danger" : "neutral"}>
-              {helperText}
-            </Typography>
-          )}
-        </>
+      {error && helperText && (
+        <Typography color="danger">{helperText}</Typography>
       )}
     </div>
   );
