@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Grid from "@mui/joy/Grid";
 import InputField from "../../components/ReusableTextField";
 import ReuseableButton from "../../components/ResusableButton";
@@ -10,10 +10,16 @@ import ReusableDataGrid from "../../components/ReusableDataGrid";
 import { GridColDef } from "@mui/x-data-grid";
 import Alerts from "../../components/ReusableAlerts";
 import { Cancel, CheckCircle } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import ReusableModal from "../../components/ReusableModal";
+import EditCategory from "../../components/EditCategory";
+import DeleteCategory from "../../components/DeleteCategory";
+import { colors } from "../../utils/constants";
 const Category = () => {
   const [formValues, setFormValues] = useState<any>({
     category: "",
-    categoryicon: null,
+    categoryicon: "",
   });
   const [alert, showAlert] = useState<any>(false);
   const [loading, setLoading] = useState(false);
@@ -21,60 +27,94 @@ const Category = () => {
     { id: number; category: string; image: string }[]
   >([]);
   const [errors, setErrors] = useState<any>({});
-  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(null);
-  console.log(formValues);
+  const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
+    null
+  );
+  const [filterRows, setFilterRows] = useState([]);
+  const [editOpenModal, setEditOpenModal] = useState(false);
+  const [deleteOpenModal, setOpenDeleteModal] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
+
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "category", headerName: "Category", flex: 1 },
-    { field: "categoryicon", headerName: "Category icon", flex: 1,renderCell: (params) => (
-      <img
-        src={params.value} 
-        alt="Category Icon"
-        style={{ width: '45px', height: '45px', objectFit: 'cover'}} 
-      />
-    ), },
+    {
+      field: "categoryicon",
+      headerName: "Category icon",
+      flex: 1,
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Category Icon"
+          style={{ width: "45px", height: "45px", objectFit: "cover" }}
+        />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <EditIcon
+            sx={{ cursor: "pointer", color: "#735DA5", marginRight: "10px" }}
+            onClick={() => handleEdit(params.row)}
+          />
+          <DeleteIcon
+            sx={{ cursor: "pointer", color: "#735DA5" }}
+            onClick={() => handleDelete(params.row)}
+          />
+        </>
+      ),
+    },
   ];
+  const handleDelete = (row: any) => {
+    setOpenDeleteModal(true);
+    setFilterRows(row);
+  };
+
+  const handleEdit = (row: any) => {
+    setEditOpenModal(true);
+    setFilterRows(row);
+  };
   const handleSubmit = async (e: any) => {
-    console.log("hello");
     e.preventDefault();
     const validationErrors = validateForm(formValues);
-    console.log(validationErrors,"errors")
     setErrors(validationErrors);
 
     if (!validationErrors.category && !validationErrors.categoryicon) {
-      setLoading(true)
+      setLoading(true);
       try {
         const formData = new FormData();
         formData.append("name", formValues.category);
-        console.log(formValues.categoryicon, "icon");
         formData.append("image", formValues.categoryicon);
 
         const response = await Post(networkUrls.addCategory, formData, true);
         if (response?.data?.api_status === 200) {
-          console.log("Success:", response);
-          setFormValues({category:""})
+          setFormValues({ category: "" });
           showAlert(true);
-          setLoading(false)
+          setLoading(false);
+          setAlertInfo({ message: response?.data?.message, isSuccess: true });
           const fileInput = document.querySelector(
             'input[name="categoryicon"]'
           ) as HTMLInputElement;
           if (fileInput) {
             fileInput.value = "";
           }
-          setSubmissionSuccess(true)
-          fetchCategories()
+          setSubmissionSuccess(true);
+          fetchCategories();
         } else {
-          console.error("Error:", response?.data?.api_status);
-          setSubmissionSuccess(false)
-          setLoading(false)
+          setSubmissionSuccess(false);
+          setAlertInfo({ message: response?.data?.message, isSuccess: false });
+          setLoading(false);
           showAlert(true);
         }
       } catch (error) {
         setLoading(false);
         console.error("Request failed", error);
-        setSubmissionSuccess(false); 
+        setSubmissionSuccess(false);
         showAlert(true);
-
       }
     }
   };
@@ -82,13 +122,13 @@ const Category = () => {
   const fetchCategories = async () => {
     try {
       const response = await Get(networkUrls.getCategory, false);
-      console.log(response.data.data, "response");
       if (response?.data?.api_status === 200) {
         const fetchedCategories = response.data.data.map(
           (category: any, index: number) => ({
             id: index + 1,
             category: category.name,
-            categoryicon:category.icon
+            categoryicon: category.icon,
+            category_id: category.category_id,
           })
         );
         setRows(fetchedCategories);
@@ -102,8 +142,6 @@ const Category = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
-
-
 
   const handleChange = (value: string | File, fieldName: string) => {
     setFormValues((prevValues: any) => {
@@ -129,21 +167,19 @@ const Category = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-      {alert && (
+        {alert && (
           <Alerts
-          message={
-            submissionSuccess
-              ? "Category Added Successfully"
-              : "Category Submission Failed"
-          }
-            backgroundColor={submissionSuccess ? "green" :"red"}
+            message={
+              alertInfo.isSuccess ? alertInfo.message : alertInfo.message
+            }
+            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
             textColor="light"
             duration={2000}
             icon={
               submissionSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             borderRadius="8px"
@@ -165,58 +201,97 @@ const Category = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container sx={{ margin: 0, display: "flex", gap: 4 ,padding:"2rem"}}>
-          <Grid xs={12} md={3}>
+        <Grid
+          container
+          className="category-container"
+        >
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="text"
               placeholder="Enter Category name"
               size="sm"
               name="category"
               label="Category"
-              style={{ width: "333px", height: "36px" }}
+              style={{ height: "36px" }}
               value={formValues.category}
               onChange={(e) => handleChange(e.target.value, "category")}
+              error={errors.category}
+              helperText={errors.category}
             />
-            {errors?.category && (
-              <p className="error-message">{errors?.category}</p>
-            )}
           </Grid>
-          <Grid xs={12} md={3}>
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="file"
               placeholder=""
               label="Category Icon"
               name="categoryicon"
               size="sm"
-              style={{ width: "333px", height: "36px",padding:"6px" }}
-                // value={formValues.categoryicon}
+              style={{  height: "36px", padding: "6px" }}
+              // value={formValues.categoryicon}
               onChange={handleFileChange}
+              error={errors.categoryicon}
+              helperText={errors.categoryicon}
             />
-            {errors?.categoryicon && (
-              <p className="error-message">{errors?.categoryicon}</p>
-            )}
           </Grid>
-          <Grid xs={12} md={12}>
+          <Grid xs={12} md={3} lg={3} sm={3}>
             <ReuseableButton
               variant="solid"
-              title="Submit"
+              title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5" }}
+              styles={{ backgroundColor: colors.primary }}
+              className="country-btn"
             />
           </Grid>
           <ReusableDataGrid
-        rows={rows}
-        columns={columns}
-        initialPageSize={5}
-        pageSizeOptions={[5, 10, 20]}
-        checkboxSelection={false}
-        disableRowSelectionOnClick={true}
-        sx={{  width: "95%" }}
-      />
+            rows={rows}
+            columns={columns}
+            initialPageSize={5}
+            pageSizeOptions={[5, 10, 20]}
+            checkboxSelection={false}
+            disableRowSelectionOnClick={true}
+            sx={{ width: "95%" }}
+          />
+          {editOpenModal && (
+            <ReusableModal
+              open={editOpenModal}
+              setOpen={setEditOpenModal}
+              heading="Edit Category"
+              type="edit"
+              component={
+                <EditCategory
+                  data={filterRows}
+                  setAlertInfo={setAlertInfo}
+                  setEditOpenModal={setEditOpenModal}
+                  showAlert={showAlert}
+                  fetchCategories={fetchCategories}
+                />
+              }
+              size="lg"
+            />
+          )}
+          {deleteOpenModal && (
+            <ReusableModal
+              open={deleteOpenModal}
+              setOpen={setOpenDeleteModal}
+              type="delete"
+              component={
+                <DeleteCategory
+                  data={filterRows}
+                  setOpenDeleteModal={setOpenDeleteModal}
+                  showAlert={showAlert}
+                  fetchCategories={fetchCategories}
+                  setAlertInfo={setAlertInfo}
+                />
+              }
+              heading="Are you sure want to delete?"
+              buttonText="Delete"
+              size="lg"
+              style={{ width: 500 }}
+            />
+          )}
         </Grid>
       </form>
-     
     </>
   );
 };

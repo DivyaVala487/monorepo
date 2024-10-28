@@ -2,6 +2,8 @@ import React from "react";
 import Input from "@mui/joy/Input";
 import { Textarea, Typography } from "@mui/joy";
 import "./styles.css"
+
+import { colors } from "../utils/constants";
 interface InputFieldProps {
   placeholder?: string;
   variant?: "solid" | "outlined" | "plain";
@@ -70,14 +72,19 @@ const InputField: React.FC<InputFieldProps> = ({
           onBlur={onBlur}
           size={size}
           color={color}
-          // required={required}
           disabled={disabled}
           value={value}
           type={type}
           onChange={onChange}
           error={error}
           className={className}
-          sx={style}
+          sx={{
+            ...style,
+            "& input::placeholder": {
+              color: colors.primary ,
+              fontWeight:400
+            }
+          }}
           id={id}
           name={name}
           slotProps={{

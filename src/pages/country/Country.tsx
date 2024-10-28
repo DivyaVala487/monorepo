@@ -17,6 +17,8 @@ import EditSubCategory from "../../components/EditSubCategory";
 import DeleteSubCategory from "../../components/DeleteSubCategory";
 import EditCountry from "../../components/EditCountry";
 import DeleteCountry from "../../components/DeleteCountry";
+import { colors } from "../../utils/constants";
+import "../styles.css"
 const Country: React.FC = () => {
   const [formValues, setFormValues] = useState<any>({
     country: "",
@@ -180,13 +182,13 @@ const Country: React.FC = () => {
       <form onSubmit={handleSubmit}>
       {alert && (
           <Alerts
-            message={alertInfo.isSuccess ? alertInfo.message : alertInfo.message}
-            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
+          message={alertInfo.isSuccess ? alertInfo.message : alertInfo.message}
+            backgroundColor={alertInfo.isSuccess ? colors.success : colors.error}
             icon={
               alertInfo.isSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             textColor="light"
@@ -210,45 +212,50 @@ const Country: React.FC = () => {
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, margin: 0 }}>
-          <Grid xs={12} md={3}>
+        <Grid container spacing={2} className="country-container">
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="text"
               placeholder="Enter Country"
               size="sm"
               value={formValues.country}
-              style={{ width: "333px !important", height: "36px" }}
+              style={{ height: "36px" }}
               onChange={(e) => handleChange(e.target.value, "country")}
               label="Country"
+              error={errors?.country}
+              helperText={errors?.country}
             />
-            {errors?.country && (
+            {/* {errors?.country && (
               <p className="error-message">{errors?.country}</p>
-            )}
+            )} */}
           </Grid>
-          <Grid xs={12} md={3}>
+          <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="file"
               placeholder=""
               label="Country Icon"
               name="countryicon"
               size="sm"
-              style={{ width: "333px", height: "36px", padding: "6px" }}
+              style={{  height: "36px", padding: "6px" }}
               // value={formValues.countryicon}
               onChange={handleFileChange}
+              error={errors?.countryicon }
+              helperText={errors?.countryicon}
             />
-            {errors?.countryicon && (
+            {/* {errors?.countryicon && (
               <p className="error-message">{errors?.countryicon}</p>
-            )}
+            )} */}
           </Grid>
 
-          <Grid xs={12} md={3}>
+          <Grid xs={12} md={3} sm={3}>
             <ReuseableButton
               variant="solid"
               size="sm"
               title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5", marginTop: "30px" }}
+              styles={{ backgroundColor:colors.primary }}
+              className="country-btn"
             />
           </Grid>
           <ReusableDataGrid
@@ -258,7 +265,7 @@ const Country: React.FC = () => {
             pageSizeOptions={[5, 10, 20]}
             checkboxSelection={false}
             disableRowSelectionOnClick={true}
-            sx={{ marginLeft: "40px", width: "95%" }}
+            sx={{ marginLeft: "9px", width: "95%" }}
           />
         </Grid>
       </form>

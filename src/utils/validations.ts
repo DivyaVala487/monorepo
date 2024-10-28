@@ -7,61 +7,56 @@ interface FormValues {
   subCategory?: string;
   category?: string;
   icon?: any;
-  categoryicon?:any;
-  countryicon?:any
+  categoryicon?: any;
+  countryicon?: any;
 }
-
 const validateForm = (formValues: FormValues): Record<string, string> => {
-  const { country, state, city, shortName, gst, category, icon, subCategory,categoryicon,countryicon } =
-    formValues;
-  console.log(formValues, "shh");
   const obj: Record<string, string> = {};
-  if (country === "" || country===null) {
+  const Regex = /^[a-zA-Z\s]+$/;
+
+  // Check each field in `formValues` and apply validation only to fields that are defined
+  if ("country" in formValues && (!formValues.country || formValues.country === "")) {
     obj["country"] = "Country is Required";
-  }
-  if (state===null || state==="") {
+  } 
+  
+  if ("state" in formValues && (!formValues.state || formValues.state === "")) {
     obj["state"] = "State is Required";
-  }
-  if (city==="" || city===null) {
+  } 
+
+  if ("city" in formValues && (!formValues.city || formValues.city === "")) {
     obj["city"] = "City is Required";
-  }
-  if (shortName === "") {
+  } 
+
+  if ("shortName" in formValues && formValues.shortName === "") {
     obj["shortName"] = "ShortName is Required";
   }
-  // if (gst === false) {
-  //   obj["gst"] = "Required Field";
-  // }
-  if (category ==="" ) {
+
+  if ("category" in formValues && formValues.category === "") {
     obj["category"] = "Category name is required";
   }
-  if (categoryicon===null || countryicon==="") {
+
+  if ("categoryicon" in formValues && formValues.categoryicon === null) {
     obj["categoryicon"] = "Category icon is required";
   }
 
-  if (countryicon===null || countryicon==="") {
+  if ("countryicon" in formValues && (!formValues.countryicon || formValues.countryicon === "")) {
     obj["countryicon"] = "Country icon is required";
   }
 
-  if (subCategory ==="") {
+  if ("subCategory" in formValues && !formValues.subCategory) {
     obj["subCategory"] = "Sub-Category is required.";
   }
 
-  if (!icon) {
-    obj["icon"] = "Sub-Category Icon is required.";
-  } 
-  // else if (!isValidFileType(icon)) {
-  //   obj["icon"] = "Invalid file type. Please upload an image.";
-  // }
+  if ("icon" in formValues) {
+    if (!formValues.icon) {
+      obj["icon"] = "Sub-Category Icon is required.";
+    } 
+  }
 
-  console.log(obj,"obj")
+  console.log("Form values:", formValues);
+  console.log("Validation errors:", obj);
 
   return obj;
-};
-
-const isValidFileType = (fileName: string) => {
-  const allowedExtensions = ["jpg", "jpeg", "png", "svg"];
-  const fileExtension = fileName?.split(".")?.pop()?.toLowerCase();
-  return fileExtension && allowedExtensions.includes(fileExtension);
 };
 
 export default validateForm;

@@ -4,7 +4,9 @@ import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import "./styles.css" 
 import { HeaderProps } from "../dtos/HeaderDto";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { colors } from "../utils/constants";
 const Header: React.FC<HeaderProps> = ({
   title,
   navLinks,
@@ -33,14 +35,14 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="header-container">
       <button className="menu-bar" onClick={toggleMenu}>
-        <FaBars size={50} />
+        <FaBars size={40} />
       </button>
 
       <nav className={`side-menu ${isMenuOpen ? "open" : ""}`}>
         <div className="mobile-side-container">
-          <p className="mobile-profile-text">Hi, {profile}</p>
-          <button className="close-menu-bar" onClick={toggleMenu}>
-            <FaBars size={50} color="black" />
+          {/* <p className="mobile-profile-text">Hi, {profile}</p> */}
+          <button className="menu-bar" onClick={toggleMenu}>
+            <CancelOutlinedIcon sx={{fontSize:40}}  />
           </button>
         </div>
         <ul className="nav-list">
@@ -63,7 +65,9 @@ const Header: React.FC<HeaderProps> = ({
           ))}
         </ul>
       </nav>
-      <h3 className="header-title">{title}</h3>
+      <h3 className="header-title" >
+        <Link to="/" className="link-title">{title}</Link>
+        </h3>
       {/* <div className="search-container">
         <input
           type={inputType}
@@ -101,9 +105,9 @@ const Header: React.FC<HeaderProps> = ({
       {/* <button className="logout-button" onClick={handleLogout}>
         Logout
       </button> */}
-      <button className="mobile-button" onClick={handleLogout}>
+      {/* <button className="mobile-button" onClick={handleLogout}>
         <FiLogOut size={50} />
-      </button>
+      </button> */}
     </header>
   );
 };

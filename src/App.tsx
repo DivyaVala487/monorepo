@@ -1,16 +1,3 @@
-// import './App.css';
-// import { ReusableNavbar } from './reusableComponents/headers/ReusableNavbar';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <ReusableNavbar navigationLinks={[]} />
-//     </div>
-//   );
-// }
-
-// export default App;
-
 import { ThemeProvider } from "styled-components";
 import Header from "./components/ReusableNavbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";

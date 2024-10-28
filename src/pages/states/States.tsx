@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditState from "../../components/EditState";
 
+import { colors } from "../../utils/constants";
 const States: React.FC = () => {
   const [formValues, setFormValues] = useState({
     country: "",
@@ -231,14 +232,14 @@ const States: React.FC = () => {
             message={
               alertInfo.isSuccess ? alertInfo.message : alertInfo.message
             }
-            backgroundColor={alertInfo.isSuccess ? "green" : "red"}
+            backgroundColor={alertInfo.isSuccess ? colors.success : colors.error}
             textColor="light"
             duration={2000}
             icon={
               alertInfo.isSuccess ? (
-                <CheckCircle style={{ color: "white", fontSize: "24px" }} />
+                <CheckCircle style={{ color: colors.white, fontSize: "24px" }} />
               ) : (
-                <Cancel style={{ color: "white", fontSize: "24px" }} />
+                <Cancel style={{ color: colors.white, fontSize: "24px" }} />
               )
             }
             borderRadius="8px"
@@ -273,10 +274,12 @@ const States: React.FC = () => {
               label="Country"
               value={formValues.country}
               onChange={(value) => handleCountryChange(value)}
+              error={errors.country}
+              helperText={errors.country}
             />
-            {errors?.country && (
+            {/* {errors?.country && (
               <p className="error-message">{errors?.country}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={4}>
             <InputField
@@ -288,8 +291,10 @@ const States: React.FC = () => {
               onChange={(e) => handleChange(e.target.value, "state")}
               value={formValues.state}
               label="State"
+              error={errors.state}
+              helperText={errors.state}
             />
-            {errors?.state && <p className="error-message">{errors?.state}</p>}
+            {/* {errors?.state && <p className="error-message">{errors?.state}</p>} */}
           </Grid>
           <Grid xs={12} md={4}>
             <InputField
@@ -301,10 +306,12 @@ const States: React.FC = () => {
               onChange={(e) => handleChange(e.target.value, "shortName")}
               value={formValues.shortName}
               label="Short Name"
+              error={errors.shortName}
+              helperText={errors.shortName}
             />
-            {errors?.shortName && (
+            {/* {errors?.shortName && (
               <p className="error-message">{errors?.shortName}</p>
-            )}
+            )} */}
           </Grid>
           <Grid xs={12} md={3}>
             <label>Is GST Required?</label>
@@ -318,10 +325,10 @@ const States: React.FC = () => {
             <ReuseableButton
               variant="solid"
               size="sm"
-              title="Submit"
+              title="Add"
               type="submit"
               loading={loading}
-              styles={{ backgroundColor: "#735DA5" }}
+              styles={{ backgroundColor: colors.primary }}
             />
           </Grid>
           <ReusableDataGrid

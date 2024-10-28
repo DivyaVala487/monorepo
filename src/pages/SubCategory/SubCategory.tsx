@@ -4,10 +4,7 @@ import Dropdown from "../../components/ResusableDropdown";
 import InputField from "../../components/ReusableTextField";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import validateForm from "../../utils/validations";
-import ReusableModal from "../../components/ReusableModal";
-import EditSubCategory from "../../components/EditSubCategory";
 import ReuseableButton from "../../components/ResusableButton";
 import { Get, Post } from "../../services/apiServices";
 import { networkUrls } from "../../services/networkrls";
@@ -15,71 +12,65 @@ import Alerts from "../../components/ReusableAlerts";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import ReusableDataGrid from "../../components/ReusableDataGrid";
 import { GridColDef } from "@mui/x-data-grid";
-import DeleteSubCategory from "../../components/DeleteSubCategory";
+import EditIcon from "@mui/icons-material/Edit";
+import ReusableModal from "../../components/ReusableModal";
+import EditSubCategory from "../../components/EditSubCategory";
+import "../styles.css";
+import { colors } from "../../utils/constants";
+import { Chip } from "@mui/material";
 const SubCategory = () => {
-  const [firstRow, setFirstRow] = useState({ subCategory: "", icon: "" });
-  const [editOpenModal, setEditOpenModal] = useState(false);
-  const [deleteOpenModal, setOpenDeleteModal] = useState(false);
   const [categories, setCategories] = useState<
     { label: string; value: number }[]
   >([]);
   const [alert, showAlert] = useState<any>(false);
+  const [editOpenModal, setEditOpenModal] = useState(false);
+  const [filterRows, setFilterRows] = useState([]);
   const [alertInfo, setAlertInfo] = useState({ message: "", isSuccess: false });
   const [categoryValue, setCategoryValue] = useState("");
   const [categoryId, setCategoryId] = useState(0);
-  const [rows, setRows] = useState<any[]>([]);
-  const [errors, setErrors] = useState<any>({});
-  const [isOpen, setIsOpen] = useState(false);
+  const [rows, setRows] = useState<any[]>([
+    { subCategory: "", icon: "", isEditing: true }, // Prepopulate one empty row
+  ]);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(
     null
   );
+  const [errors, setErrors] = useState<any>({});
   const [isSubmit, setIsSubmit] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filterRows, setFilterRows] = useState([]);
   const [data, setData] = useState([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const handleFirstRowChange = (value: string, field: string) => {
-    setFirstRow((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
 
-    setErrors((prevErrors: any) => ({
-      ...prevErrors,
-      firstRow: {
-        ...prevErrors.firstRow,
-        [field]: undefined,
-      },
-    }));
-  };
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "category", headerName: "Category", flex: 1 },
     {
-      field: "categoryIcon",
-      headerName: "Category icon",
+      field: "subCategory",
+      headerName: "SubCategory",
       flex: 1,
       renderCell: (params) => (
-        <img
-          src={params.value}
-          alt="Category-Icon"
-          style={{ width: "45px", height: "45px", objectFit: "cover" }}
-        />
+        <>
+          {params.value.map((subcategory: any) => (
+            <Chip
+              key={subcategory.id} // Use a unique key, e.g., subcategory id
+              label={subcategory.subcategory_name}
+              style={{ margin: "2px" }} // Add some margin for spacing
+            />
+          ))}
+        </>
       ),
     },
-    { field: "subCategory", headerName: "SubCategory", flex: 1 },
-    {
-      field: "subCategoryIcon",
-      headerName: "SubCategory icon",
-      flex: 1,
-      renderCell: (params) => (
-        <img
-          src={params.value}
-          alt="Sub-Category-Icon"
-          style={{ width: "45px", height: "45px", objectFit: "cover" }}
-        />
-      ),
-    },
+    // {
+    //   field: "subCategoryIcon",
+    //   headerName: "SubCategory icon",
+    //   flex: 1,
+    //   renderCell: (params) => (
+    //     <img
+    //       src={params.value}
+    //       alt="Sub-Category-Icon"
+    //       style={{ width: "45px", height: "45px", objectFit: "cover" }}
+    //     />
+    //   ),
+    // },
     {
       field: "actions",
       headerName: "Actions",
@@ -88,132 +79,83 @@ const SubCategory = () => {
       renderCell: (params) => (
         <>
           <EditIcon
-            sx={{ cursor: "pointer", color: "#735DA5", marginRight: "10px" }}
+            sx={{
+              cursor: "pointer",
+              color: colors.primary,
+              marginRight: "10px",
+            }}
             onClick={() => handleEdit(params.row)}
           />
-          <DeleteIcon
+          {/* <DeleteIcon
             sx={{ cursor: "pointer", color: "#735DA5" }}
             onClick={() => handleDelete(params.row)}
-          />
+          /> */}
         </>
       ),
     },
   ];
-  const handleFileChange = (e: any) => {
+
+  const handleEdit = (row: any) => {
+    setEditOpenModal(true);
+    setFilterRows(row);
+  };
+  const handleFileChange = (e: any, index: number) => {
     const file = e.target.files[0];
-    handleFirstRowChange(file, "icon");
+    handleChange(file, "icon", index);
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await Get(networkUrls.getCategory, false);
-        const categoryOptions = response.data.data.map((category: any) => ({
-          label: category.name,
-          value: category.category_id,
-        }));
-        setCategories(categoryOptions);
-      } catch (error) {
-        console.error("Error fetching countries", error);
-      }
-    };
-    fetchCategories();
-    getSubCategories();
-  }, []);
-
-  const handleAddRow = () => {
-    const firstRowErrors = validateForm(firstRow);
-    if (firstRowErrors.subCategory && firstRowErrors.icon) {
-      console.log("hy")
-      setErrors((prevErrors: any) => ({
-        ...prevErrors,
-        firstRow: firstRowErrors,
-      }));
-    } else {
-      setRows((prevRows) => [...prevRows, { ...firstRow, isEditing: true }]);
-      setFirstRow({ subCategory: "", icon: "" });
-      const fileInput = document.querySelector(
-        'input[name="icon"]'
-      ) as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = "";
-      }
-      setIsSubmit(true);
-
-      setErrors((prevErrors: any) => ({
-        ...prevErrors,
-        firstRow: {},
-      }));
-    }
-  };
   const handleCategoryChange = (value: string) => {
     const categoryId: any = value ? parseInt(value) : null;
-    console.log(categoryId, "categoryid");
     setCategoryId(categoryId);
-
     setCategoryValue(value);
-    if (value !== null) {
-      setIsOpen(true);
-    }
-
-   ;
   };
+
+  const handleAddRow = () => {
+    const newRow = { subCategory: "", icon: "", isEditing: true };
+    setRows((prevRows) => [...prevRows, newRow]);
+    setIsSubmit(true);
+  };
+
   const handleChange = (value: string, field: string, index: number) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
 
-    setErrors((prevErrors: any) => {
-      const newErrors = { ...prevErrors };
-      if (newErrors.dynamicRows && newErrors.dynamicRows[index]) {
-        newErrors.dynamicRows[index] = {
-          ...newErrors.dynamicRows[index],
-          [field]: undefined,
-        };
-      }
-      return newErrors;
-    });
-
+    // Validate only the field being changed
     const validationErrors = validateForm(updatedRows[index]);
+
     setErrors((prevErrors: any) => ({
       ...prevErrors,
       dynamicRows: {
         ...prevErrors.dynamicRows,
-        [index]: validationErrors,
+        [index]: {
+          ...(prevErrors.dynamicRows?.[index] || {}),
+          [field]: validationErrors[field],
+        },
       },
     }));
 
     setRows(updatedRows);
   };
 
-  console.log(rows, "rows");
-  const handleDelete = (row: any) => {
-    setOpenDeleteModal(true);
-    setFilterRows(row);
+  const handleDeleteRow = (index: number) => {
+    const updatedRows = rows.filter((_, i) => i !== index);
+    setRows(updatedRows);
   };
 
-  const handleEdit = (row: any) => {
-    setEditOpenModal(true);
-    setFilterRows(row);
-  };
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    const firstRowErrors = validateForm(firstRow);
-    let isValid = Object.keys(firstRowErrors).length === 0;
-  
+    const category = categoryValue;
+    const validateCategory = validateForm({ category });
     const updatedErrors = rows.map((row) => validateForm(row));
-    console.log(updatedErrors,"updatedErrors");
     const allRowsValid = updatedErrors.every(
       (err) => Object.keys(err).length === 0
     );
-    setErrors({ dynamicRows: updatedErrors });
+    setErrors({ dynamicRows: updatedErrors, category: validateCategory });
 
-  
     if (allRowsValid) {
       setLoading(true);
       const formData: any = new FormData();
-  
+
       rows.forEach((row) => {
         formData.append(`subcategories`, row.subCategory);
         if (row.icon instanceof File) {
@@ -230,22 +172,21 @@ const SubCategory = () => {
             isSuccess: true,
           });
           setLoading(false);
+          setSubmissionSuccess(true);
           setCategoryValue("");
-  
-          // Clear the firstRow state
-          setFirstRow({ subCategory: "", icon: "" });
-          setRows([]); // Clear all rows
-  setIsSubmit(false)
-  setIsOpen(false);
-          const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+          setRows([{ subCategory: "", icon: "", isEditing: true }]);
+          const fileInput = document.querySelector(
+            'input[name="icon"]'
+          ) as HTMLInputElement;
           if (fileInput) {
-            fileInput.value = ""; 
+            fileInput.value = "";
           }
-  
+          setIsSubmit(false);
           getSubCategories();
         } else {
           setLoading(false);
           showAlert(true);
+          setSubmissionSuccess(false);
           setAlertInfo({
             message: response?.data?.message,
             isSuccess: false,
@@ -255,26 +196,22 @@ const SubCategory = () => {
         console.log("Error adding sub-category", error);
         setLoading(false);
       }
-    } else {
-      console.log("Validation Failed");
     }
   };
-  
-  
+
+  console.log(errors, "errors");
+  console.log(data, "data");
   const getSubCategories = async () => {
     try {
       const response = await Get(networkUrls.getSubCategories, false);
       if (response?.data?.api_status === 200) {
-        console.log(response?.data?.data, "data");
         const subCategoryData = response?.data?.data.map(
           (subcategory: any, index: any) => ({
             id: index + 1,
-            category: subcategory.category.name,
-            categoryIcon: subcategory.category.icon,
-            subCategory: subcategory.sub_category_name,
-            subCategoryIcon: subcategory.icon,
-            subcategoryId: subcategory.subcategory_id,
+            category: subcategory.category_name,
+            categoryIcon: subcategory.category_icon,
             categoryId: subcategory.category_id,
+            subCategory: subcategory.subcategory,
           })
         );
         setData(subCategoryData);
@@ -284,12 +221,31 @@ const SubCategory = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await Get(networkUrls.getCategory, false);
+        const categoryOptions = response.data.data.map((category: any) => ({
+          label: category.name,
+          value: category.category_id,
+        }));
+        setCategories(categoryOptions);
+      } catch (error) {
+        console.error("Error fetching categories", error);
+      }
+    };
+    fetchCategories();
+    getSubCategories();
+  }, []);
+
   return (
     <>
       <form onSubmit={handleSubmit}>
         {alert && (
           <Alerts
-            message={alertInfo.isSuccess ? alertInfo.message : alertInfo.message}
+            message={
+              alertInfo.isSuccess ? alertInfo.message : alertInfo.message
+            }
             backgroundColor={alertInfo.isSuccess ? "green" : "red"}
             icon={
               alertInfo.isSuccess ? (
@@ -299,28 +255,15 @@ const SubCategory = () => {
               )
             }
             textColor="light"
-            duration={2000}
-            borderRadius="8px"
-            boxShadow="0 4px 8px rgba(0,0,0,0.2)"
-            position="top-right"
-            height="25px"
-            width="400px"
-            padding="20px"
-            margin="30px"
-            borderColor="black"
-            borderWidth="2px"
-            showCloseButton={true}
-            closeButtonColor="darkred"
-            fontSize="18px"
-            fontWeight="bold"
-            textAlign="left"
-            zIndex={1000}
-            alertPosition="200px"
             onClose={() => showAlert(false)}
           />
         )}
-        <Grid container spacing={10} sx={{ flexGrow: 1, margin: 0 }}>
-          <Grid xs={12} md={3}>
+        <Grid
+          container
+          spacing={4}
+          sx={{ flexGrow: 1, margin: 0, padding: "1.5rem" }}
+        >
+          <Grid xs={12} md={12}>
             <Dropdown
               options={categories}
               onChange={handleCategoryChange}
@@ -331,65 +274,21 @@ const SubCategory = () => {
               label="Category"
             />
           </Grid>
-          {isOpen && (
+
+          {categoryValue !== "" && (
+            <Grid xs={12} md={12} className="subcategory-btn">
+              <ReuseableButton
+                variant="solid"
+                title="Add SubCategory"
+                startDecorator={<AddIcon />}
+                styles={{ backgroundColor: colors.primary }}
+                type="button"
+                onClick={handleAddRow}
+              />
+            </Grid>
+          )}
+          {categoryValue !== "" && (
             <Grid container spacing={4} xs={12} md={12}>
-              <Grid xs={12} md={5}>
-                <InputField
-                  type="text"
-                  placeholder="Enter Sub-Category"
-                  size="sm"
-                  label="SubCategory"
-                  value={firstRow.subCategory}
-                  style={{ width: "100%", height: "36px" }}
-                  onChange={(e) =>
-                    handleFirstRowChange(e.target.value, "subCategory")
-                  }
-                />
-                {errors.firstRow?.subCategory && (
-                  <p className="error-message">
-                    {errors.firstRow?.subCategory}
-                  </p>
-                )}
-              </Grid>
-              <Grid xs={12} md={5}>
-                <InputField
-                  type="file"
-                  placeholder=""
-                  label="Sub-Category Icon"
-                  name="icon"
-                  size="sm"
-                  ref={fileInputRef}
-                  style={{ width: "100%", height: "36px", padding: "6px" }}
-                  onChange={handleFileChange}
-                />
-                {errors.firstRow?.icon && (
-                  <p className="error-message">{errors.firstRow?.icon}</p>
-                )}
-              </Grid>
-              <Grid xs={12} md={1}>
-                <AddIcon
-                  sx={{
-                    marginTop: "30px",
-                    color: "#735DA5",
-                    cursor: "pointer",
-                  }}
-                  onClick={handleAddRow}
-                />
-              </Grid>
-              {isSubmit &&
-              <Grid
-               container
-               spacing={4}
-               xs={12}
-               md={12}
-               alignItems="center"
-               sx={{
-                 backgroundColor: "#D3C5E5",
-                 width: "90%",
-                 margin: "10px",
-                 borderRadius:"10px"
-               }}
-              >
               {rows.map((row, index) => (
                 <Grid
                   container
@@ -399,131 +298,92 @@ const SubCategory = () => {
                   key={index}
                   alignItems="center"
                 >
-                  <Grid xs={12} md={5}>
+                  <Grid xs={5} md={5.5}>
                     <InputField
                       type="text"
                       placeholder="Enter Sub-Category"
                       size="sm"
-                      label="SubCategory"
-                      name="subCategory"
+                      label={`SubCategory${index + 1}`}
                       value={row.subCategory}
                       style={{ width: "100%", height: "36px" }}
                       onChange={(e) =>
                         handleChange(e.target.value, "subCategory", index)
                       }
-                      disabled={!row.isEditing}
+                      error={errors.dynamicRows?.[index]?.subCategory}
+                      helperText={errors.dynamicRows?.[index]?.subCategory}
                     />
-                    {errors.dynamicRows?.[index]?.subCategory && (
-                      <p className="error-message">
-                        {errors.dynamicRows?.[index]?.subCategory}
-                      </p>
-                    )}
                   </Grid>
-                  <Grid xs={12} md={5}>
+
+                  <Grid xs={6} md={5.5}>
                     <InputField
-                      type="text"
-                      placeholder=""
-                      label="Sub-Category Icon"
-                      name="icon"
+                      type="file"
                       size="sm"
-                      value={row.icon}
-                      style={{ width: "100%", height: "36px" }}
-                      onChange={(e) =>
-                        handleChange(e.target.value, "icon", index)
-                      }
-                      disabled={!row.isEditing}
-                    />
-                    {errors.dynamicRows?.[index]?.icon && (
-                      <p className="error-message">
-                        {errors.dynamicRows?.[index]?.icon}
-                      </p>
-                    )}
-                  </Grid>
-                  {/* <Grid xs={12} md={0.5}>
-                    <EditIcon
-                      sx={{
-                        marginTop: "30px",
-                        color: "#735DA5",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => toggleEditRow(index)}
+                      label={`Sub-Category Icon${index + 1}`}
+                      ref={fileInputRef}
+                      style={{ width: "100%", height: "36px", padding: "6px" }}
+                      onChange={(e) => handleFileChange(e, index)}
+                      error={errors.dynamicRows?.[index]?.icon}
+                      helperText={errors.dynamicRows?.[index]?.icon}
                     />
                   </Grid>
-                  <Grid xs={12} md={0.5}>
-                    <DeleteIcon
-                      sx={{
-                        marginTop: "30px",
-                        color: "red",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleDeleteRow(index)}
-                    />
-                  </Grid> */}
+                  {index !== 0 && (
+                    <Grid xs={1} md={1}>
+                      <DeleteIcon
+                        sx={{
+                          marginTop: "30px",
+                          color: "#FF0000",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleDeleteRow(index)}
+                      />
+                    </Grid>
+                  )}
                 </Grid>
               ))}
-              
-              <Grid xs={12} md={12}>
-                <ReuseableButton
-                  variant="solid"
-                  title="Submit"
-                  loading={loading}
-                  type="submit"
-                  styles={{ backgroundColor: "#735DA5" }}
-                />
-              </Grid>
-              </Grid>}
             </Grid>
           )}
+
+          {categoryValue !== "" && (
+            <Grid xs={12} md={4}>
+              <ReuseableButton
+                variant="solid"
+                title="Add"
+                loading={loading}
+                type="submit"
+                styles={{ backgroundColor: colors.primary }}
+              />
+            </Grid>
+          )}
+          <ReusableDataGrid
+            rows={data}
+            columns={columns}
+            initialPageSize={5}
+            pageSizeOptions={[5, 10, 20]}
+            checkboxSelection={false}
+            disableRowSelectionOnClick={true}
+            sx={{ width: "98%", marginLeft: "19px" }}
+          />
         </Grid>
-      
       </form>
-      <ReusableDataGrid
-        rows={data}
-        columns={columns}
-        initialPageSize={5}
-        pageSizeOptions={[5, 10, 20]}
-        checkboxSelection={false}
-        disableRowSelectionOnClick={true}
-        sx={{width:"90%",marginLeft:"40px"}}
-      />
-        {editOpenModal && (
-          <ReusableModal
-            open={editOpenModal}
-            setOpen={setEditOpenModal}
-            heading="Edit Category"
-            type="edit"
-            component={
-              <EditSubCategory
-                data={filterRows}
-                setAlertInfo={setAlertInfo}
-                setEditOpenModal={setEditOpenModal}
-                showAlert={showAlert}
-                getSubCategories={getSubCategories}
-              />
-            }
-            size="lg"
-          />
-        )}
-        {deleteOpenModal && (
-          <ReusableModal
-            open={deleteOpenModal}
-            setOpen={setOpenDeleteModal}
-            type="delete"
-            component={
-              <DeleteSubCategory
-                data={filterRows}
-                setOpenDeleteModal={setOpenDeleteModal}
-                showAlert={showAlert}
-                getSubCategories={getSubCategories}
-                setAlertInfo={setAlertInfo}
-              />
-            }
-            heading="Are you sure want to delete?"
-            buttonText="Delete"
-            size="lg"
-            style={{ width: 500 }}
-          />
-        )}
+
+      {editOpenModal && (
+        <ReusableModal
+          open={editOpenModal}
+          setOpen={setEditOpenModal}
+          heading="Edit Category"
+          type="edit"
+          component={
+            <EditSubCategory
+              data={filterRows}
+              setEditOpenModal={setEditOpenModal}
+              setAlertInfo={setAlertInfo}
+              getSubCategories={getSubCategories}
+              showAlert={showAlert}
+            />
+          }
+          size="lg"
+        />
+      )}
     </>
   );
 };
