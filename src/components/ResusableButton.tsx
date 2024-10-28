@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Button, ButtonProps } from "@mui/joy";
 import { ColorPaletteProp } from "@mui/joy/styles";
-
+import "./styles.css"
 interface ReusableButtonProps extends ButtonProps {
   color?: ColorPaletteProp;
   variant?: "outlined" | "solid" | "plain";
@@ -17,6 +17,7 @@ interface ReusableButtonProps extends ButtonProps {
   loadingIndicator?: ReactNode;
   loadingPosition?: "start" | "end" | "center";
   title?: string;
+  claasName?:any;
 }
 
 const ReuseableButton: React.FC<ReusableButtonProps> = ({
@@ -35,6 +36,7 @@ const ReuseableButton: React.FC<ReusableButtonProps> = ({
   loadingIndicator,
   loadingPosition,
   type,
+  className
 }) => {
   return (
     <Button
@@ -50,6 +52,7 @@ const ReuseableButton: React.FC<ReusableButtonProps> = ({
       loadingIndicator={loadingIndicator}
       loadingPosition={loadingPosition}
       sx={styles}
+      className={className}
       type={type}
       // slotProps={slotProps} // Spread additional props
     >

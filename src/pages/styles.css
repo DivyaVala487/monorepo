@@ -18,3 +18,24 @@
     }
     
 }
+
+.country-container{
+    display: flex;
+    margin: 0 !important;
+    gap: 20px;
+    padding: 2rem;
+}
+.country-btn{
+    margin-top: 29px !important;
+  }
+
+
+@media (max-width:599px) {
+    .country-container{
+        gap: 0px;
+    }
+    .country-btn{
+        margin-top: 0px !important;
+    }
+}
+

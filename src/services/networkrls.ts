@@ -16,7 +16,7 @@ export const networkUrls = {
   deleteCategory: "/category/delete-category",
   getCategory: "/category/get-all-category",
   addSubCategory: "/subcategory/add-sub-category",
-  updateSubCategory: "/subcategory/edit-sub-category",
+  updateSubCategory: "/subcategory/editing-sub-category",
   deleteSubCategory: "/subcategory/delete-sub-category",
   getSubCategories: "/subcategory/get-all-sub-categories",
 };

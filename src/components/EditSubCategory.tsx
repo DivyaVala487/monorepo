@@ -84,10 +84,8 @@ const EditSubCategory: React.FC<EditSubCategoryProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    // Validate each row in `subCategoryData`
     const formErrors = subCategoryData.map((item, index) => validateForm(item));
     
-    // Check if there are any errors
     const hasErrors = formErrors.some((errors) => Object.keys(errors).length);
   
     if (hasErrors) {
@@ -96,11 +94,10 @@ const EditSubCategory: React.FC<EditSubCategoryProps> = ({
         return acc;
       }, {} as { [key: string]: any });
   
-      setErrors(errorsObject); // Update errors if validation fails
+      setErrors(errorsObject); 
       return;
     }
   
-    // If validation passes, proceed with the API call
     setLoading(true);
   
     const formData = new FormData();
