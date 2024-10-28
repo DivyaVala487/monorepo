@@ -14,7 +14,7 @@ const EditCountry = ({
   fetchCountries,
   showAlert,
 }: any) => {
-  const [countryData, setCountryData] = useState({ country: "", icon: "" });
+  const [countryData, setCountryData] = useState<any>({ country: "", icon: "" });
   const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [isDummy, setIsDummy] = useState(false);
@@ -59,7 +59,12 @@ const EditCountry = ({
       setLoading(true);
       const formData = new FormData();
       formData.append("name", countryData.country);
-      formData.append("image", countryData.icon);
+      
+      console.log(countryData.icon,"icon")
+      
+      if (countryData.icon instanceof File) {
+        formData.append("image", countryData.icon); // Append file
+      } 
       formData.append("country_id", data.country_id);
       try {
         const response: any = await Put(
