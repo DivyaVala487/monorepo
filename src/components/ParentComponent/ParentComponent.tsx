@@ -8,9 +8,10 @@ import ReusableModal from "../ResuableModel/ResuableModel";
 import Tooltip from "../ToolTip/Tooltip";
 import Calendar from "../Calender/Calender";
 import "./ParentComponent.css";
-import Tabs from '../Tabs/Tabs';
+import Tabs from "../Tabs/Tabs";
 import Table from "../Table/MainTable/MainTable";
 import Alerts from "../Alerts/Alerts";
+import Loader from "../Loader/Loader";
 
 const ParentComponent = () => {
   const [logout, setLogOut] = useState(false);
@@ -140,34 +141,33 @@ const ParentComponent = () => {
     setOpenInfoModal(true);
   };
 
-//   for the alerts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// const [alertConfig, setAlertConfig] = useState<any>(null);
+  //   for the alerts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const [alertConfig, setAlertConfig] = useState<any>(null);
 
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   const handleShowAlert = (type: any, message: string, backgroundColor: string, textColor: string) => {
-//     setAlertConfig({
-//       message,
-//       type,
-//       backgroundColor,
-//       textColor,
-//       duration: 3000, // Auto-dismiss after 3 seconds
-//       icon: type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle',
-//     });
-//   };
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   const handleShowAlert = (type: any, message: string, backgroundColor: string, textColor: string) => {
+  //     setAlertConfig({
+  //       message,
+  //       type,
+  //       backgroundColor,
+  //       textColor,
+  //       duration: 3000, // Auto-dismiss after 3 seconds
+  //       icon: type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle',
+  //     });
+  //   };
 
-const [showAlert, setShowAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-const handleButtonClick = () => {
-  // Show the alert when button is clicked
-  setShowAlert(true);
+  const handleButtonClick = () => {
+    // Show the alert when button is clicked
+    setShowAlert(true);
 
-  // Optionally hide the alert after a certain time
-  setTimeout(() => {
-    setShowAlert(false);
-  }, 5000); // Auto-hide after 5 seconds
-};
-
+    // Optionally hide the alert after a certain time
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000); // Auto-hide after 5 seconds
+  };
 
   //   for the calender functionality
 
@@ -178,65 +178,76 @@ const handleButtonClick = () => {
     console.log("Selected Date:", date);
   };
   const data = [
-    { name: 'John Doe', age: 28, email: 'john@example.com', office:"absyz" },
-    { name: 'Jane Smith', age: 34, email: 'jane@example.com',office:"absyz" },
-    { name: 'Mark Brown', age: 22, email: 'mark@example.com', office:"absyz" },
-    { name: 'Sara White', age: 27, email: 'sara@example.com',  office:"absyz" },
+    { name: "John Doe", age: 28, email: "john@example.com", office: "absyz" },
+    { name: "Jane Smith", age: 34, email: "jane@example.com", office: "absyz" },
+    { name: "Mark Brown", age: 22, email: "mark@example.com", office: "absyz" },
+    { name: "Sara White", age: 27, email: "sara@example.com", office: "absyz" },
 
-    { name: 'Alex Green', age: 31, email: 'alex@example.com',office:"absyz" },
+    { name: "Alex Green", age: 31, email: "alex@example.com", office: "absyz" },
   ];
 
-  const headers = ['Name', 'Age', 'Email','office'];
+  const headers = ["Name", "Age", "Email", "office"];
 
-//   Tabs Items
-const tabItems = [
+  //   Tabs Items
+  const tabItems = [
     {
-      label: 'Home',
+      label: "Home",
       content: (
         <div className="card">
           <div className="card-icon">
-            <img src="https://i.pinimg.com/236x/8b/8d/68/8b8d68a2fbfd23930de9dbc9da6fb0c2.jpg" alt="Icon 1" />
+            <img
+              src="https://i.pinimg.com/236x/8b/8d/68/8b8d68a2fbfd23930de9dbc9da6fb0c2.jpg"
+              alt="Icon 1"
+            />
           </div>
           <h3 className="card-title">Welcome to Our Website</h3>
           <p className="card-description">
-            Discover our amazing services and offerings. Our platform is designed to help you achieve your goals effortlessly.
+            Discover our amazing services and offerings. Our platform is
+            designed to help you achieve your goals effortlessly.
           </p>
           <button className="card-button">Learn More</button>
         </div>
       ),
     },
     {
-      label: 'About Us',
+      label: "About Us",
       content: (
         <div className="card">
           <div className="card-icon">
-            <img src="https://i.pinimg.com/236x/d8/77/1e/d8771ea436d8ade2301502171d61c272.jpg" alt="Icon 2" />
+            <img
+              src="https://i.pinimg.com/236x/d8/77/1e/d8771ea436d8ade2301502171d61c272.jpg"
+              alt="Icon 2"
+            />
           </div>
           <h3 className="card-title">Who We Are</h3>
           <p className="card-description">
-            We are a dedicated team committed to providing excellent service and solutions tailored to your needs.
+            We are a dedicated team committed to providing excellent service and
+            solutions tailored to your needs.
           </p>
           <button className="card-button">Get Started</button>
         </div>
       ),
     },
     {
-      label: 'Contact Us',
+      label: "Contact Us",
       content: (
         <div className="card">
           <div className="card-icon">
-            <img src="https://i.pinimg.com/236x/6a/99/ee/6a99ee843798375c5f7049316e8d31ed.jpg" alt="Icon 3" />
+            <img
+              src="https://i.pinimg.com/236x/6a/99/ee/6a99ee843798375c5f7049316e8d31ed.jpg"
+              alt="Icon 3"
+            />
           </div>
           <h3 className="card-title">Get in Touch</h3>
           <p className="card-description">
-            We would love to hear from you! Reach out to us for any questions, feedback, or assistance.
+            We would love to hear from you! Reach out to us for any questions,
+            feedback, or assistance.
           </p>
           <button className="card-button">Contact Us</button>
         </div>
       ),
     },
   ];
-  
 
   return (
     <div>
@@ -333,86 +344,95 @@ const tabItems = [
         </Tooltip>
 
         {/* for the calender */}
-
-      
       </div>
       <div className="calender">
-          <h1 className="responsive-heading">Reusable Calendar</h1>
-          <Calendar
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-            disablePastDates={false} 
-          />
-        </div>
+        <h1 className="responsive-heading">Reusable Calendar</h1>
+        <Calendar
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          disablePastDates={false}
+        />
+      </div>
 
-        <div>
-      <h1 className="responsive-heading">Reusable Tabs Component</h1>
-      <Tabs tabs={tabItems} activeTabColor="purple" inactiveTabColor="lightgray" />
-    </div>
-    <div>
+      <div>
+        <h1 className="responsive-heading">Reusable Tabs Component</h1>
+        <Tabs
+          tabs={tabItems}
+          activeTabColor="purple"
+          inactiveTabColor="lightgray"
+        />
+      </div>
+      <div>
         <h1 className="responsive-heading">Table Component</h1>
         <Table
-      data={data}  
-      headers={headers}  
-      itemsPerPage={3}  
-      rowHeight="60px"  
-      rowColor="lightgray"  
-    //   rowHoverColor="white"  
-      rowBorderColor="#ddd"  
-      rowTextAlign="center" 
-      colWidths={['200px', '100px', '250px']}  
-      colAlignments={['left', 'center', 'left']}  
-      colHoverBackgroundColors={['#d0d0d0', '#d0d0d0', '#d0d0d0']}  
-      tableWidth="85%"  
-      tableBorderCollapse={true} 
-      paginationProps={{
-        totalPagesLabel: "out of",
-        prevLabel: "Prev",
-        nextLabel: "Next",
-        showPageNumbers: true,
-        disablePrevNextOnBoundaries: false, 
-      }}
-      rowPadding="15px"  
-      colPadding="15px"  
-      colFontSize="14px"  
-      colFontWeight="bold"  
-      colBorder="1px solid #999" 
-    />
-    </div>
-    <div>
+          data={data}
+          headers={headers}
+          itemsPerPage={3}
+          rowHeight="60px"
+          rowColor="lightgray"
+          //   rowHoverColor="white"
+          rowBorderColor="#ddd"
+          rowTextAlign="center"
+          colWidths={["200px", "100px", "250px"]}
+          colAlignments={["left", "center", "left"]}
+          colHoverBackgroundColors={["#d0d0d0", "#d0d0d0", "#d0d0d0"]}
+          tableWidth="85%"
+          tableBorderCollapse={true}
+          paginationProps={{
+            totalPagesLabel: "out of",
+            prevLabel: "Prev",
+            nextLabel: "Next",
+            showPageNumbers: true,
+            disablePrevNextOnBoundaries: false,
+          }}
+          rowPadding="15px"
+          colPadding="15px"
+          colFontSize="14px"
+          colFontWeight="bold"
+          colBorder="1px solid #999"
+        />
+      </div>
+      <div>
         <h1 className="responsive-heading">Reusable Alert Component</h1>
-      <button onClick={handleButtonClick}>Trigger Alert</button>
+        <button onClick={handleButtonClick}>Trigger Alert</button>
 
-      {/* Conditionally render the Alert component */}
-      {showAlert && (
-        <Alerts
-        message="Loggined Succesfully!"
-        backgroundColor="black"
-        textColor="darkred"
-        duration={0} // Setting this to 0 means it won't auto-hide
-        icon="⚠️"
-        borderRadius="8px"
-        boxShadow="0 4px 8px rgba(0,0,0,0.2)"
-        position="top-left"  
-        height="50px"         
-        width="400px"         
-        padding="20px"
-        margin="10px"
-        borderColor="red"
-        borderWidth="2px"
-        showCloseButton={true}
-        closeButtonColor="darkred"
-        // closeButtonHoverColor="lightred"
-        fontSize="18px"
-        fontWeight="bold"
-        textAlign="left"
-        zIndex={1000}
-        onClose={() => setShowAlert(false)} // Close alert when close button is clicked
-      />
-      
-      )}
+        {/* Conditionally render the Alert component */}
+        {showAlert && (
+          <Alerts
+            message="Loggined Succesfully!"
+            backgroundColor="black"
+            textColor="darkred"
+            duration={0} // Setting this to 0 means it won't auto-hide
+            icon="⚠️"
+            borderRadius="8px"
+            boxShadow="0 4px 8px rgba(0,0,0,0.2)"
+            position="top-left"
+            height="50px"
+            width="400px"
+            padding="20px"
+            margin="10px"
+            borderColor="red"
+            borderWidth="2px"
+            showCloseButton={true}
+            closeButtonColor="darkred"
+            // closeButtonHoverColor="lightred"
+            fontSize="18px"
+            fontWeight="bold"
+            textAlign="left"
+            zIndex={1000}
+            onClose={() => setShowAlert(false)} // Close alert when close button is clicked
+          />
+        )}
+      </div>
+
+      <div>
+      <h1>Loader Examples</h1>
+      <Loader size={60} color="info" />
+      {/* <Loader size={60} color="success" thickness={6} /> */}
+      {/* <Loader variant="determinate" value={50} /> */}
+      {/* <Loader showButton buttonText="Retry" /> */}
+      {/* <Loader showLoadingText />  */}
     </div>
-    
     </div>
   );
 };
