@@ -1,0 +1,95 @@
+/* Tooltip container for relative positioning */
+.tooltip-container {
+    display: inline-block;
+    position: relative;
+  }
+  
+  /* Default tooltip styling */
+  .tooltip-box {
+    position: absolute;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+  }
+  
+  /* Tooltip visible when hovering */
+  .tooltip-container:hover .tooltip-box {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Tooltip position variants */
+  .tooltip-top {
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .tooltip-right {
+    top: 50%;
+    left: 125%;
+    transform: translateY(-50%);
+  }
+  
+  .tooltip-bottom {
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .tooltip-left {
+    top: 50%;
+    right: 125%;
+    transform: translateY(-50%);
+  }
+  
+  /* Optional arrow styling */
+  .tooltip-box::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+  
+  /* Arrow for top tooltip */
+  .tooltip-top::before {
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0 6px;
+    border-color: black transparent transparent transparent; /* Adjust color */
+  }
+  
+  /* Arrow for right tooltip */
+  .tooltip-right::before {
+    top: 50%;
+    left: -6px;
+    transform: translateY(-50%);
+    border-width: 6px 6px 6px 0;
+    border-color: transparent black transparent transparent;
+  }
+  
+  /* Arrow for bottom tooltip */
+  .tooltip-bottom::before {
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 6px 6px 6px;
+    border-color: transparent transparent black transparent;
+  }
+  
+  /* Arrow for left tooltip */
+  .tooltip-left::before {
+    top: 50%;
+    right: -6px;
+    transform: translateY(-50%);
+    border-width: 6px 0 6px 6px;
+    border-color: transparent transparent transparent black;
+  }
+  

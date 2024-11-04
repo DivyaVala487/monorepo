@@ -1,0 +1,150 @@
+.carousel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    position: relative;
+    background-color: #333;
+    border-radius: 10px;
+    width: 80vw; /* Adjusted for better responsiveness */
+    max-width: 100%;
+    color: #fff;
+  }
+  
+  .carousel-inner {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .carousel-content {
+    flex: 2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .prev-button,
+  .next-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .prev-button {
+    left: 10px;
+  }
+  
+  .next-button {
+    right: 10px;
+  }
+  
+  .slider-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .slider-paragraph {
+    margin: 10px 0;
+  }
+  
+  .slider-image {
+    margin-top: 20px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+  
+  .slider-inside {
+    text-align: center;
+    padding: 0 10px;
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media screen and (max-width: 1200px) {
+    .carousel-container {
+      width: 85vw;
+      height: 55vh;
+    }
+  
+    .prev-button,
+    .next-button {
+      font-size: 1.8rem;
+      padding: 8px;
+    }
+  
+    .slider-title {
+      font-size: 1.4rem;
+    }
+  }
+  
+  @media screen and (max-width: 992px) {
+    .carousel-container {
+      width: 90vw;
+      height: 50vh;
+    }
+  
+    .prev-button,
+    .next-button {
+      font-size: 1.6rem;
+      padding: 6px;
+    }
+  
+    .slider-title {
+      font-size: 1.3rem;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .carousel-container {
+      width: 95vw;
+      height: 45vh;
+    }
+  
+    .prev-button,
+    .next-button {
+      font-size: 1.4rem;
+      padding: 5px;
+    }
+  
+    .slider-title {
+      font-size: 1.2rem;
+    }
+  
+    .slider-image img {
+      width: 90%;
+      height: auto;
+    }
+  }
+  
+  @media screen and (max-width: 576px) {
+    .carousel-container {
+      width: 100vw;
+      height: 40vh;
+    }
+  
+    .prev-button,
+    .next-button {
+      font-size: 1.2rem;
+      padding: 4px;
+    }
+  
+    .slider-title {
+      font-size: 1rem;
+    }
+  
+    .slider-image img {
+      width: 85%;
+      height: auto;
+    }
+  }
+  

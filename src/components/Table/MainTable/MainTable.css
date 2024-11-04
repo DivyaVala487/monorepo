@@ -1,0 +1,79 @@
+.main-table {
+    width: 100vw;
+    overflow-x: auto;
+  }
+  
+  /* Responsive for small devices */
+  @media screen and (max-width: 768px) {
+    .main-table {
+      width: 76%; /* Adjust the width to fit smaller devices */
+      overflow-x: scroll; /* Allow horizontal scrolling for tables */
+    }
+  
+    table {
+      width: 100%;
+      border-spacing: 0; /* Remove gaps between table cells */
+    }
+  
+    thead th,
+    tbody td {
+      font-size: 14px; /* Reduce font size for readability on small screens */
+      padding: 8px; /* Adjust padding for better spacing */
+    }
+  }
+  
+  /* Responsive for extra small devices (mobiles) */
+  @media screen and (max-width: 576px) {
+    .main-table {
+      width: 100%; /* Full width for extra small devices */
+      overflow-x: scroll;
+    }
+  
+    table {
+      width: 100%;
+    }
+  
+    thead th,
+    tbody td {
+      font-size: 12px; /* Further reduce font size */
+      padding: 6px;
+    }
+  
+    .prev-button,
+    .next-button {
+      font-size: 1.2rem; /* Smaller buttons on small screens */
+    }
+  }
+  
+  /* Responsive for medium devices */
+  @media screen and (max-width: 992px) {
+    .main-table {
+      width: 85vw; /* Slightly reduced width for medium screens */
+    }
+  
+    thead th,
+    tbody td {
+      font-size: 16px; /* Moderate font size for better readability */
+    }
+  }
+  
+  /* Pagination responsive tweaks */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+  }
+  
+  .pagination button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    font-size: 14px;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .pagination button {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  }
+  
