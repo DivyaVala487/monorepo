@@ -1,0 +1,22 @@
+/* Loader.module.css */
+
+.loaderContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .fullScreen {
+    height: 100vh;
+  }
+  
+  .buttonMarginTop {
+    margin-top: 16px;
+  }
+  
+  .childrenMarginTop {
+    margin-top: 16px;
+  }
+  

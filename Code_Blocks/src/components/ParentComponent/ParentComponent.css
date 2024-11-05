@@ -1,0 +1,89 @@
+.tool{
+    display: flex;
+    height: 20vh;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.calender{
+    margin-top: 100px;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    text-align: center;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-icon {
+    margin-bottom: 15px;
+  }
+  
+  .card-icon img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .card-description {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .card-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-button:hover {
+    background-color: #0056b3;
+  }
+  
+
+  /* ParentComponent.css */
+
+
+.responsive-heading {
+    font-size: 2rem; 
+    /* margin: 1rem 0;   */
+    /* color: #fff;      */
+    text-align: center; 
+  }
+  
+  
+  @media (max-width: 768px) {
+    .responsive-heading {
+      font-size: 1.5rem; 
+    }
+  }
+  
+  
+  @media (max-width: 480px) {
+    .responsive-heading {
+      font-size: 1.2rem;
+    }
+  }
+  
