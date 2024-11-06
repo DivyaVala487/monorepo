@@ -216,7 +216,7 @@ const Country: React.FC = () => {
           <Grid xs={12} md={3} lg={4} sm={4}>
             <InputField
               type="text"
-              placeholder="Enter Country"
+              placeholder="Country"
               size="sm"
               value={formValues.country}
               style={{ height: "36px" }}
