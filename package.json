@@ -1,0 +1,13 @@
+{
+    "name": "my-monorepo",
+    "private": true,
+    "workspaces": [
+      "Code_Blocks",        
+      "DemoProject_Frontend",
+      "DemoProject_Backend" 
+    ],
+    "scripts": {
+      "start": "concurrently \"npm --prefix DemoProject_Backend run start\"  \"npm --prefix DemoProject_Frontend run start\" \"npm --prefix Code_Blocks run dev\""
+    }
+  }
+  
