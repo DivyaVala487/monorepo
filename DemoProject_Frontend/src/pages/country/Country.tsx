@@ -112,9 +112,10 @@ const Country: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validateForm(formValues);
+    console.log(validationErrors,"errors")
     setErrors(validationErrors);
 
-    if (!validationErrors.country) {
+    if (!validationErrors.country && !validationErrors.countryicon) {
       setLoading(true);
 
       const formData = new FormData();
