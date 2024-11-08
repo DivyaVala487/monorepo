@@ -10,71 +10,69 @@ interface FormValues {
   categoryicon?: any;
   countryicon?: any;
 }
+
 const validateForm = (formValues: FormValues): Record<string, string> => {
-  const obj: Record<string, string> = {};
+  const errors: Record<string, string> = {};
   const textOnlyRegex = /^[a-zA-Z\s]+$/;
+  const filteredValues = Object.fromEntries(
+    Object.entries(formValues).filter(
+      ([, value]) =>
+        value === null || value === undefined || value === "" || value === false
+    )
+  );
 
-  if (
-    "country" in formValues &&
-    (!formValues.country || formValues.country === "")
-  ) {
-    obj["country"] = "Country is Required";
-  } else if (formValues.country && !textOnlyRegex.test(formValues.country)) {
-    obj["country"] = "Country should contain only letters and spaces";
-  }
+  console.log(filteredValues, "formvalues");
 
-  if ("state" in formValues && (!formValues.state || formValues.state === "")) {
-    obj["state"] = "State is Required";
-  } else if (formValues.state && !textOnlyRegex.test(formValues.state)) {
-    obj["state"] = "State should contain only letters and spaces";
-  }
+  for (const [key, value] of Object.entries(filteredValues)) {
+    switch (key) {
+      case "country":
+      case "state":
+      case "city":
+      case "shortName":
+      case "category":
+        if (!value) {
+          errors[key] = `${capitalizeFirstLetter(key)} is required`;
+        } else if (!textOnlyRegex.test(value) && typeof value !== "number") {
+          console.log(value, "value");
+          errors[key] = `${capitalizeFirstLetter(
+            key
+          )} should contain only letters and spaces`;
+        }
+        break;
 
-  if ("city" in formValues && (!formValues.city || formValues.city === "")) {
-    obj["city"] = "City is Required";
-  } else if (formValues.city && !textOnlyRegex.test(formValues.city)) {
-    obj["city"] = "City should contain only letters and spaces";
-  }
+      case "subCategory":
+        if (!value) {
+          errors[key] = "Sub-Category is required";
+        }
+        break;
 
-  if ("shortName" in formValues && formValues.shortName === "") {
-    obj["shortName"] = "ShortName is Required";
-  } else if (
-    formValues.shortName &&
-    !textOnlyRegex.test(formValues.shortName)
-  ) {
-    obj["shortName"] = "ShortName should contain only letters and spaces";
-  }
+      case "categoryicon":
+        if (value === null) {
+          errors[key] = "Category icon is required";
+        }
+        break;
 
-  if ("category" in formValues && formValues.category === "") {
-    obj["category"] = "Category name is required";
-  } else if (formValues.category && !textOnlyRegex.test(formValues.category)) {
-    obj["category"] = "Category name should contain only letters and spaces";
-  }
+      case "countryicon":
+        if (!value) {
+          errors[key] = "Country icon is required";
+        }
+        break;
 
-  if ("categoryicon" in formValues && formValues.categoryicon === null) {
-    obj["categoryicon"] = "Category icon is required";
-  }
+      case "icon":
+        if (!value) {
+          errors[key] = "Sub-Category Icon is required";
+        }
+        break;
 
-  if (
-    "countryicon" in formValues &&
-    (!formValues.countryicon || formValues.countryicon === "")
-  ) {
-    obj["countryicon"] = "Country icon is required";
-  }
-
-  if ("subCategory" in formValues && !formValues.subCategory) {
-    obj["subCategory"] = "Sub-Category is required.";
-  }
-
-  if ("icon" in formValues) {
-    if (!formValues.icon) {
-      obj["icon"] = "Sub-Category Icon is required.";
+      default:
+        break;
     }
   }
 
-  console.log("Form values:", formValues);
-  console.log("Validation errors:", obj);
-
-  return obj;
+  return errors;
 };
+
+const capitalizeFirstLetter = (str: string): string =>
+  str.charAt(0).toUpperCase() + str.slice(1);
 
 export default validateForm;
